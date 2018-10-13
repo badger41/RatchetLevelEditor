@@ -1,0 +1,102 @@
+
+  [
+    {
+      //Add all model IDs that will be using this config
+      "modelIds": [
+        0x03F4
+      ],
+      //Each pVar will be a control for how to manipulate that specific chunk of data
+      "pVars": [
+        {
+          //Which index of the pVar block that will be edited
+          "index": 0x60,
+
+          //What this pVar will be called in the UI
+          "label": "Taxi Speed",
+
+          //Which control to use to modify this pVar
+          "control": "float",
+
+          //Specify if this pVar is a special type of value
+          //Examples: Spawn points, zone IDs, path IDs, 
+          "specialInd": "none",
+
+          //How much data this config will be modifying
+          //usage is index + length
+          "length": 0x04,
+
+          //Minimum and maximum values that can be set
+          "min": 0,
+          "max": 150,
+        },
+		{
+          "index": 0x90,
+          "label": "Taxi Initial Destination",
+          "control": "number",
+          "specialInd": "pathID",
+          "length": 0x04,
+          "min": 0,
+          "max": 100,
+        },
+		{
+          "index": 0x94,
+          "label": "Taxi Next Destination",
+          "control": "number",
+          "specialInd": "pathID",
+          "length": 0x04,
+          "min": 0,
+          "max": 100,
+        },
+		{
+          "index": 0x98,
+          "label": "Initial Interaction Message",
+          "control": "number",
+          "specialInd": "messageID",
+          "length": 0x04,
+          "min": 0,
+          "max": 100,
+        },
+		{
+          "index": 0x9C,
+          "label": "Next Interaction Message",
+          "control": "number",
+          "specialInd": "messageID",
+          "length": 0x04,
+          "min": 0,
+          "max": 100,
+        },
+      ]
+    },
+	{
+      "modelIds": [
+        0x0383
+      ],
+      "pVars": [
+		{
+          "index": 0x00,
+          "label": "Escalator Path Index",
+          "control": "number",
+          "specialInd": "pathID",
+          "length": 0x04,
+          "min": 0,
+          "max": 100,
+        }
+      ]
+    },
+	{
+      "modelIds": [
+        0x01C7
+      ],
+      "pVars": [
+		{
+          "index": 0x86,
+          "label": "Pod Spawn Limit",
+          "control": "number",
+          "specialInd": "none",
+          "length": 0x02,
+          "min": 0,
+          "max": 20,
+        }
+      ]
+    },
+  ]
