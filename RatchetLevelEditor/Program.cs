@@ -8,7 +8,6 @@ namespace RatchetLevelEditor
 {
     static class Program
     {
-        //test
         /// <summary>
         /// The main entry point for the application.
         /// </summary>

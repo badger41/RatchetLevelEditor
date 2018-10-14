@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using static DataFunctions;
 using static RatchetModel;
 using static RatchetTexture;
+using static RatchetLevelEditor.GameplayParser;
 
 namespace RatchetLevelEditor
 {
@@ -90,14 +91,14 @@ namespace RatchetLevelEditor
 
             #region Mobies
 
-            uint mobyCount = BAToUInt32(ReadBlock(gpf, gameplayHeader.mobyPointer, 4), 0);
+            /*uint mobyCount = BAToUInt32(ReadBlock(gpf, gameplayHeader.mobyPointer, 4), 0);
             byte[] mobyBlock = ReadBlock(gpf, gameplayHeader.mobyPointer + 0x10, mobyCount * gameplayHeader.mobyElemSize);
 
             for(uint i = 0; i < mobyCount; i++)
             {
                 RatchetMoby mob = new RatchetMoby(racNum, mobyBlock, i);
                 DataStore.mobs.Add(mob);
-            }
+            }*/
             #endregion
 
             DataStore.splines = new List<Spline>();
@@ -115,6 +116,7 @@ namespace RatchetLevelEditor
 
 
             gpf.Close();
+            parseGameplay(path, (int) racNum);
 
             EngineHeader engineHeader = new EngineHeader(fs, 1);
             DataStore.engineHeader = engineHeader;

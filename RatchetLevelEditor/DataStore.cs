@@ -19,6 +19,7 @@ namespace RatchetLevelEditor
     {
 
         /* Engine File Specific, universal between the different ratchet games */
+        public static EngineHeader engineHeader;
         public static byte[] mapRenderDefintions;
         public static byte[] skyBox;
         public static byte[] collisionMap;
@@ -50,14 +51,8 @@ namespace RatchetLevelEditor
         /* End Chunk Files */
 
         /*Gameplay file*/
-        public static List<RatchetMoby> mobs = new List<RatchetMoby>();
-        public static RatchetMoby selectedMoby;
-
-        public static LevelObject selectedLevelObject;
-
-        public static EngineHeader engineHeader;
         public static GameplayHeader gameplayHeader;
-
+        public static List<RatchetMoby> mobs = new List<RatchetMoby>();
         public static List<byte[]> pVarList;
         public static List<Spline> splines;
 
@@ -73,12 +68,12 @@ namespace RatchetLevelEditor
         /* End UYA Specific mapped engine data */
 
         /* UYA Engine Unmapped data ************/
-        public static byte[] Ptr_08;                                   //0x08 - null
-        public static byte[] Ptr_0C;                                   //0x0C - null
-        public static byte[] Ptr_40;                                   //0x40 - null
-        public static byte[] Ptr_44;                                   //0x44 - null
-        public static byte[] Ptr_4C;                                   //0x4C - null    Weapon pointer(rac1)
-        public static byte[] Ptr_50;                                   //0x50 - null    Weapon count (rac1)
+        public static byte[] enginePtr_08;                                   //0x08 - null
+        public static byte[] enginePtr_0C;                                   //0x0C - null
+        public static byte[] enginePtr_40;                                   //0x40 - null
+        public static byte[] enginePtr_44;                                   //0x44 - null
+        public static byte[] enginePtr_4C;                                   //0x4C - null    Weapon pointer(rac1)
+        public static byte[] enginePtr_50;                                   //0x50 - null    Weapon count (rac1)
         /* End Engine UYA Unmapped Data ********/
 
         /* Deadlocked Specific Missions ********/
@@ -89,6 +84,8 @@ namespace RatchetLevelEditor
         /* Misc data not directly related to ratchet files */
         public static string workingDirectory;
         public static List<MobyPropertyVariables> pVarMap;
+        public static RatchetMoby selectedMoby;
+        public static LevelObject selectedLevelObject;
         /* End Misc data not directly related to ratchet files */
     }
 }

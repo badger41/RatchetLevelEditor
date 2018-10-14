@@ -704,14 +704,14 @@ namespace RatchetLevelEditor
             #region Remaining Data
 
             DataStore.mapRenderDefintions = getSection(fs, 0x04);
-            DataStore.Ptr_08 = getSection(fs, 0x08);
-            DataStore.Ptr_0C = getSection(fs, 0x0C);
+            DataStore.enginePtr_08 = getSection(fs, 0x08);
+            DataStore.enginePtr_0C = getSection(fs, 0x0C);
             DataStore.skyBox = getSection(fs, 0x14);
             DataStore.collisionMap = getSection(fs, 0x18);
-            DataStore.Ptr_44 = getSection(fs, 0x44);
+            DataStore.enginePtr_44 = getSection(fs, 0x44);
             DataStore.soundsConfig = getSection(fs, 0x54);
-            DataStore.Ptr_4C = getSection(fs, 0x4C);
-            DataStore.Ptr_50 = getSection(fs, 0x50);
+            DataStore.enginePtr_4C = getSection(fs, 0x4C);
+            DataStore.enginePtr_50 = getSection(fs, 0x50);
             DataStore.lighting = getSection(fs, 0x68);
             DataStore.lightingConfig = getSection(fs, 0x6C);
             DataStore.textureConfigMenu = getSection(fs, 0x74);
