@@ -280,7 +280,20 @@ using System.Threading.Tasks;
         byteArr[offset + 2] = byt[1];
         byteArr[offset + 3] = byt[0];
     }
+    public static uint ReadUInt32(FileStream fs, uint offset)
+    {
+        byte[] ret = new byte[4];
 
+        try
+        {
+            if (fs.Position != offset)
+                fs.Seek(offset, SeekOrigin.Begin);
+            fs.Read(ret, 0, (int)4);
+        }
+        catch { return 0; }
+
+        return (uint)((ret[0] << 24) | (ret[1] << 16) | (ret[2] << 8) | (ret[3] << 0));
+    }
     public static uint ReadUInt32(byte[] a, int offset)
     {
         return (uint)((a[offset + 0] << 24) | (a[offset + 1] << 16) | (a[offset + 2] << 8) | (a[offset + 3] << 0));

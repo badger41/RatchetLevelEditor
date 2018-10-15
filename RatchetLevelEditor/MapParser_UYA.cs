@@ -57,36 +57,36 @@ namespace RatchetLevelEditor
             #endregion
 
             #region pVars
-            List<byte[]> pVars;
-            uint numpVars;
-            byte[] pVarHeadBlock;
-            uint pVarSectionLength;
-            byte[] pVarBlock;
-            switch (racNum)
-            {
-                case 1:
-                case 2:
-                case 3:
-                    pVars = new List<byte[]>();
-                    numpVars = (gameplayHeader.pVarPointer - gameplayHeader.pVarListPointer) / 8;
-                    pVarHeadBlock = ReadBlock(gpf, gameplayHeader.pVarListPointer, numpVars * 8);
-                    pVarSectionLength = 0;
-                    for (uint i = 0; i < numpVars; i++)
-                    {
-                        pVarSectionLength += BAToUInt32(pVarHeadBlock, (i * 8) + 0x04);
-                    }
-                    pVarBlock = ReadBlock(gpf, gameplayHeader.pVarPointer, pVarSectionLength);
-                    for (uint i = 0; i < numpVars; i++)
-                    {
-                        uint mobpVarsStart = BAToUInt32(pVarHeadBlock, (i * 8));
-                        uint mobpVarsCount = BAToUInt32(pVarHeadBlock, (i * 8) + 0x04);
-                        byte[] mobpVars = new byte[mobpVarsCount];
-                        mobpVars = getBytes(pVarBlock, (int)mobpVarsStart, (int)mobpVarsCount);
-                        pVars.Add(mobpVars);
-                    }
-                    DataStore.pVarList = pVars;
-                    break;
-            }
+            //List<byte[]> pVars;
+            //uint numpVars;
+            //byte[] pVarHeadBlock;
+            //uint pVarSectionLength;
+            //byte[] pVarBlock;
+            //switch (racNum)
+            //{
+            //    case 1:
+            //    case 2:
+            //    case 3:
+            //        pVars = new List<byte[]>();
+            //        numpVars = (gameplayHeader.pVarPointer - gameplayHeader.pVarListPointer) / 8;
+            //        pVarHeadBlock = ReadBlock(gpf, gameplayHeader.pVarListPointer, numpVars * 8);
+            //        pVarSectionLength = 0;
+            //        for (uint i = 0; i < numpVars; i++)
+            //        {
+            //            pVarSectionLength += BAToUInt32(pVarHeadBlock, (i * 8) + 0x04);
+            //        }
+            //        pVarBlock = ReadBlock(gpf, gameplayHeader.pVarPointer, pVarSectionLength);
+            //        for (uint i = 0; i < numpVars; i++)
+            //        {
+            //            uint mobpVarsStart = BAToUInt32(pVarHeadBlock, (i * 8));
+            //            uint mobpVarsCount = BAToUInt32(pVarHeadBlock, (i * 8) + 0x04);
+            //            byte[] mobpVars = new byte[mobpVarsCount];
+            //            mobpVars = getBytes(pVarBlock, (int)mobpVarsStart, (int)mobpVarsCount);
+            //            pVars.Add(mobpVars);
+            //        }
+            //        DataStore.pVarList = pVars;
+            //        break;
+            //}
             #endregion pVars
 
             #region Mobies
@@ -101,18 +101,18 @@ namespace RatchetLevelEditor
             }*/
             #endregion
 
-            DataStore.splines = new List<Spline>();
+            //DataStore.splines = new List<Spline>();
 
-            uint splineCount = BAToUInt32(ReadBlock(gpf, gameplayHeader.splinePointer, 4), 0);
-            uint splineOffset = BAToUInt32(ReadBlock(gpf, gameplayHeader.splinePointer + 4, 4), 0);
-            uint splineSectionSize = BAToUInt32(ReadBlock(gpf, gameplayHeader.splinePointer + 8, 4), 0);
-            byte[] splineHeadBlock = ReadBlock(gpf, gameplayHeader.splinePointer + 0x10, splineCount * 4);
-            byte[] splineBlock = ReadBlock(gpf, gameplayHeader.splinePointer + splineOffset, splineSectionSize);
-            for (uint i = 0; i < splineCount; i++)
-            {
-                uint offset = BAToUInt32(splineHeadBlock, (i * 4));
-                DataStore.splines.Add(new Spline(splineBlock, offset));
-            }
+            //uint splineCount = BAToUInt32(ReadBlock(gpf, gameplayHeader.splinePointer, 4), 0);
+            //uint splineOffset = BAToUInt32(ReadBlock(gpf, gameplayHeader.splinePointer + 4, 4), 0);
+            //uint splineSectionSize = BAToUInt32(ReadBlock(gpf, gameplayHeader.splinePointer + 8, 4), 0);
+            //byte[] splineHeadBlock = ReadBlock(gpf, gameplayHeader.splinePointer + 0x10, splineCount * 4);
+            //byte[] splineBlock = ReadBlock(gpf, gameplayHeader.splinePointer + splineOffset, splineSectionSize);
+            //for (uint i = 0; i < splineCount; i++)
+            //{
+            //    uint offset = BAToUInt32(splineHeadBlock, (i * 4));
+            //    DataStore.splines.Add(new Spline(splineBlock, offset));
+            //}
 
 
             gpf.Close();

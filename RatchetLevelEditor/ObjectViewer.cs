@@ -11,6 +11,8 @@ using System.IO;
 using static DataFunctions;
 using RatchetLevelEditor.MobyPVarUserControls;
 
+using static RatchetLevelEditor.GameplaySerializer;
+
 namespace RatchetLevelEditor
 {
     public partial class ObjectViewer : Form
@@ -307,15 +309,15 @@ namespace RatchetLevelEditor
                     }
                     break;
             }
-            
 
-            FileStream gameplayFile = null;
+            serialize(DataStore.workingDirectory, (int) DataStore.gameplayHeader.gameNum);
+            /*FileStream gameplayFile = null;
             gameplayFile = File.OpenWrite(DataStore.workingDirectory + "/gameplay_ntsc");
             Console.WriteLine((DataStore.gameplayHeader.mobyPointer + 0x10).ToString("X8"));
             gameplayFile.Seek(DataStore.gameplayHeader.mobyPointer + 0x10, SeekOrigin.Begin);
             gameplayFile.Write(test, 0, mobCount * mobElemSize);
             gameplayFile.Close();
-            Console.WriteLine("File written successfully, enjoy :)");
+            Console.WriteLine("File written successfully, enjoy :)");*/
             
         }
 

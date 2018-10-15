@@ -19,8 +19,10 @@ namespace RatchetLevelEditor.MobyPVarUserControls
             InitializeComponent();
             this.pVarConfig = pVarConfig;
             intControlGroup.Text = pVarConfig.label;
-            intValueControl.Minimum = pVarConfig.min;
-            intValueControl.Maximum = pVarConfig.max;
+            decimal min = pVarConfig.min;
+            decimal max = pVarConfig.max;
+            intValueControl.Minimum = min != -1 && min != 0 ? min : decimal.MinValue;
+            intValueControl.Maximum = max != -1 && max != 0 ? max : decimal.MaxValue;
             int returnValue;
             switch(pVarConfig.length)
             {

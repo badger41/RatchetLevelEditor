@@ -10,6 +10,7 @@ namespace RatchetLevelEditor
 {
     public class Spline
     {
+
         public float[] vertexBuffer;
         int VBO;
 

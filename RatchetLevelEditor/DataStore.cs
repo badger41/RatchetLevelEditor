@@ -52,6 +52,7 @@ namespace RatchetLevelEditor
 
         /*Gameplay file*/
         public static GameplayHeader gameplayHeader;
+        public static uint mobyUnknownVal;
         public static List<RatchetMoby> mobs = new List<RatchetMoby>();
         public static List<byte[]> pVarList;
         public static List<Spline> splines;
