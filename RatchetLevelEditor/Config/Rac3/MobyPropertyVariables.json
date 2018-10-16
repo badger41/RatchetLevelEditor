@@ -4,7 +4,7 @@
         0x18A2, 0x16BD
       ],
       "pVars": [
-		{
+        {
           "index": 0x0030,
           "label": "Health",
           "control": "float",
@@ -49,6 +49,74 @@
           "min": 0,
           "max": 250,
         }
+      ]
+    },
+		{
+      "modelIds": [
+        0x1A17
+      ],
+      "pVars": [
+        {
+          "index": 0x0758,
+          "label": "Linked Moby ID",
+          "control": "number",
+          "specialInd": "none",
+          "length": 0x04,
+          "min": 0,
+          "max": 1500,
+        },
+      ]
+    },
+			{
+      "modelIds": [
+        0x19E2
+      ],
+      "pVars": [
+	    {
+          "index": 0x001C,
+          "label": "Mission Name (List View)",
+          "control": "number",
+          "specialInd": "none",
+          "length": 0x04,
+          "min": -1,
+          "max": 100000,
+        },
+		{
+          "index": 0x0020,
+          "label": "Mission Name (Header)",
+          "control": "number",
+          "specialInd": "none",
+          "length": 0x04,
+          "min": -1,
+          "max": 100000,
+        },
+		{
+          "index": 0x0024,
+          "label": "Mission Description",
+          "control": "number",
+          "specialInd": "none",
+          "length": 0x04,
+          "min": -1,
+          "max": 100000,
+        },
+		{
+          "index": 0x0030,
+          "label": "Is a new map loaded? 1 or 0",
+          "control": "number",
+          "specialInd": "none",
+          "length": 0x03,
+          "min": 0,
+          "max": 1,
+        },
+        {
+          "index": 0x0050,
+          "label": "Load Map ID",
+          "control": "number",
+          "specialInd": "none",
+          "length": 0x01,
+          "min": -1,
+          "max": 255,
+        },
       ]
     },
 ]

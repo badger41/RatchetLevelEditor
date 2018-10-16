@@ -26,6 +26,9 @@ namespace RatchetLevelEditor.MobyPVarUserControls
             int returnValue;
             switch(pVarConfig.length)
             {
+                case 1:
+                    returnValue = pVarData[pVarConfig.index];
+                    break;
                 case 2:
                     returnValue = BAToShort(pVarData, pVarConfig.index);
                     break;
@@ -49,6 +52,9 @@ namespace RatchetLevelEditor.MobyPVarUserControls
                 byte[] data;
                 switch (pVarConfig.length)
                 {
+                    case 1:
+                        data = new byte[1] { (byte)intValueControl.Value };
+                        break;
                     case 2:
                         data = BitConverter.GetBytes((short)intValueControl.Value);
                         break;
