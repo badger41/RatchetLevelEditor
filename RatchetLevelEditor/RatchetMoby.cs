@@ -242,5 +242,176 @@ namespace RatchetLevelEditor
                 pVars = new byte[0];
             }
         }
+
+        public static void serialize(ref byte[] gameplay_ntsc, int index, int racNum)
+        {
+            //The 16 bytes before the actual start of the moby list
+            //0x00 = moby count
+            //0x04 = ??? but its required
+            //0x08 - 0x0C = null
+            byte[] mobyInitHeader = new byte[0x10];
+            WriteUint32(ref mobyInitHeader, 0x00, (uint)DataStore.mobs.Count);
+            WriteUint32(ref mobyInitHeader, 0x04, DataStore.mobyUnknownVal);
+
+            int currentOffset = gameplay_ntsc.Length;
+            Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + mobyInitHeader.Length));
+            writeBytes(gameplay_ntsc, currentOffset, mobyInitHeader, mobyInitHeader.Length);
+
+
+            switch (racNum)
+            {
+                case 1:
+                    foreach (RatchetMoby mob in DataStore.mobs)
+                    {
+                        byte[] data = new byte[mob.length];
+
+                        WriteUint32(ref data, 0x00, mob.length);
+                        WriteUint32(ref data, 0x04, mob.missionID);
+                        WriteUint32(ref data, 0x08, mob.unk1);
+                        WriteUint32(ref data, 0x0C, mob.dataval);
+
+                        WriteUint32(ref data, 0x10, mob.dropamnt);
+                        WriteUint32(ref data, 0x14, mob.unk2);
+                        WriteUint32(ref data, 0x18, mob.modelID);
+                        WriteFloat(ref data, 0x1C, mob.size);
+
+                        WriteUint32(ref data, 0x20, mob.rend1);
+                        WriteUint32(ref data, 0x24, mob.rend2);
+                        WriteUint32(ref data, 0x28, mob.unk3);
+                        WriteUint32(ref data, 0x2C, mob.unk4);
+
+                        WriteFloat(ref data, 0x30, mob.x);
+                        WriteFloat(ref data, 0x34, mob.y);
+                        WriteFloat(ref data, 0x38, mob.z);
+                        WriteFloat(ref data, 0x3C, mob.rot1);
+
+                        WriteFloat(ref data, 0x40, mob.rot2);
+                        WriteFloat(ref data, 0x44, mob.rot3);
+                        WriteUint32(ref data, 0x48, mob.unk5);
+                        WriteInt32(ref data, 0x4C, mob.test1);
+
+                        WriteFloat(ref data, 0x50, mob.z2);
+                        WriteUint32(ref data, 0x54, mob.unk8);
+                        WriteUint32(ref data, 0x58, mob.propIndex);
+                        WriteUint32(ref data, 0x5C, mob.unk9);
+
+                        WriteUint32(ref data, 0x60, mob.unk10);
+                        WriteUint32(ref data, 0x64, mob.r);
+                        WriteUint32(ref data, 0x68, mob.g);
+                        WriteUint32(ref data, 0x6C, mob.b);
+
+                        WriteUint32(ref data, 0x70, mob.light);
+                        WriteInt32(ref data, 0x74, mob.cutScene);
+
+                        currentOffset = gameplay_ntsc.Length;
+                        Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + mob.length));
+                        writeBytes(gameplay_ntsc, currentOffset, data, data.Length);
+
+                    }
+                    break;
+
+                case 2:
+                case 3:
+                    foreach (RatchetMoby mob in DataStore.mobs)
+                    {
+                        byte[] data = new byte[mob.length];
+                        WriteUint32(ref data, 0x00, mob.length);
+                        WriteUint32(ref data, 0x04, mob.missionID);
+                        WriteUint32(ref data, 0x08, mob.unk1);
+                        WriteUint32(ref data, 0x0C, mob.dataval);
+
+                        WriteUint32(ref data, 0x10, mob.unk2);
+                        WriteUint32(ref data, 0x14, mob.dropamnt);
+                        WriteUint32(ref data, 0x18, mob.unk3);
+                        WriteUint32(ref data, 0x1C, mob.unk4);
+
+                        WriteUint32(ref data, 0x20, mob.unk5);
+                        WriteUint32(ref data, 0x24, mob.unk6);
+                        WriteUint32(ref data, 0x28, mob.modelID);
+                        WriteFloat(ref data, 0x2C, mob.size);
+
+                        WriteUint32(ref data, 0x30, mob.rend1);
+                        WriteUint32(ref data, 0x34, mob.rend2);
+                        WriteUint32(ref data, 0x38, mob.unk7);
+                        WriteUint32(ref data, 0x3C, mob.unk8);
+
+                        WriteFloat(ref data, 0x40, mob.x);
+                        WriteFloat(ref data, 0x44, mob.y);
+                        WriteFloat(ref data, 0x48, mob.z);
+                        WriteFloat(ref data, 0x4C, mob.rot1);
+
+                        WriteFloat(ref data, 0x50, mob.rot2);
+                        WriteFloat(ref data, 0x54, mob.rot3);
+                        WriteUint32(ref data, 0x58, mob.unk9);
+                        WriteUint32(ref data, 0x5C, mob.unk10);
+
+                        WriteUint32(ref data, 0x60, mob.unk11);
+                        WriteUint32(ref data, 0x64, mob.unk12);
+                        WriteUint32(ref data, 0x68, mob.propIndex);
+                        WriteUint32(ref data, 0x6C, mob.unk14);
+
+                        WriteUint32(ref data, 0x70, mob.unk15);
+                        WriteUint32(ref data, 0x74, mob.r);
+                        WriteUint32(ref data, 0x78, mob.g);
+                        WriteUint32(ref data, 0x7C, mob.b);
+
+                        WriteUint32(ref data, 0x80, mob.light);
+                        WriteUint32(ref data, 0x84, mob.unk16);
+
+                        currentOffset = gameplay_ntsc.Length;
+                        Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + mob.length));
+                        writeBytes(gameplay_ntsc, currentOffset, data, data.Length);
+
+
+                    }
+                    break;
+
+                case 4:
+                    foreach (RatchetMoby mob in DataStore.mobs)
+                    {
+                        byte[] data = new byte[mob.length];
+                        WriteUint32(ref data, 0x00, mob.length);
+                        WriteUint32(ref data, 0x04, mob.missionID);
+                        WriteUint32(ref data, 0x08, mob.dataval);
+                        WriteUint32(ref data, 0x0C, mob.unk1);
+
+                        WriteUint32(ref data, 0x10, mob.modelID);
+                        WriteFloat(ref data, 0x14, mob.size);
+                        WriteUint32(ref data, 0x18, mob.rend1);
+                        WriteUint32(ref data, 0x1C, mob.rend2);
+
+                        WriteUint32(ref data, 0x20, mob.unk2);
+                        WriteUint32(ref data, 0x24, mob.unk3);
+                        WriteFloat(ref data, 0x28, mob.x);
+                        WriteFloat(ref data, 0x2C, mob.y);
+
+                        WriteFloat(ref data, 0x30, mob.z);
+                        WriteFloat(ref data, 0x34, mob.rot1);
+                        WriteFloat(ref data, 0x38, mob.rot2);
+                        WriteFloat(ref data, 0x3C, mob.rot3);
+
+                        WriteUint32(ref data, 0x40, mob.unk4);
+                        WriteUint32(ref data, 0x44, mob.unk5);
+                        WriteUint32(ref data, 0x48, mob.unk6);
+                        WriteUint32(ref data, 0x4C, mob.unk7);
+
+                        WriteUint32(ref data, 0x50, mob.propIndex);
+                        WriteUint32(ref data, 0x54, mob.unk8);
+                        WriteUint32(ref data, 0x58, mob.unk9);
+                        WriteUint32(ref data, 0x5C, mob.r);
+
+                        WriteUint32(ref data, 0x60, mob.g);
+                        WriteUint32(ref data, 0x64, mob.b);
+                        WriteUint32(ref data, 0x68, mob.light);
+                        WriteUint32(ref data, 0x6C, mob.unk14);
+
+                        currentOffset = gameplay_ntsc.Length;
+                        Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + mob.length));
+                        writeBytes(gameplay_ntsc, currentOffset, data, data.Length);
+
+                    }
+                    break;
+            }
+        }
     }
 }
