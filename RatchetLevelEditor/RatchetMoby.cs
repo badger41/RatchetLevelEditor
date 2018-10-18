@@ -413,5 +413,63 @@ namespace RatchetLevelEditor
                     break;
             }
         }
+
+        public static void serializeMobyPvarSizes(ref byte[] gameplay_ntsc, int index)
+        {
+            int currentOffset = gameplay_ntsc.Length;
+
+            //We have to ensure that pointers end on a 0, or else the game will not parse it
+            //byte[] space = new byte[0x08];
+            //Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + space.Length));
+            //writeBytes(gameplay_ntsc, currentOffset, space, space.Length);
+
+            //pVar sizes have to be stored as well
+            int expectedSize = DataStore.pVarList.Count * 0x08;
+
+            //We have to make sure that offsets end in a 0, or else the game will crash
+            //while ((gameplay_ntsc.Length + expectedSize) % 10 != 0)
+            //expectedSize += 0x04;
+
+            byte[] pVarSizes = new byte[expectedSize];
+            uint pVarSizeOffset = 0;
+
+            foreach (byte[] pvar in DataStore.pVarList)
+            {
+
+                byte[] pVarSize = new byte[0x08];
+                //Write the current offset of the size config
+                WriteUint32(ref pVarSize, 0x00, pVarSizeOffset);
+
+                //Write the size of the current pvar
+                WriteUint32(ref pVarSize, 0x04, (uint)pvar.Length);
+
+                //Write the new pvar size data to appropriate index
+                int pVarIndex = DataStore.pVarList.IndexOf(pvar);
+                writeBytes(pVarSizes, pVarIndex * 0x08, pVarSize, 8);
+
+                //Increment the size of the offset
+                pVarSizeOffset += (uint)pvar.Length;
+            }
+
+            currentOffset = gameplay_ntsc.Length;
+            Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + pVarSizes.Length));
+            writeBytes(gameplay_ntsc, currentOffset, pVarSizes, pVarSizes.Length);
+        }
+
+        public static void serializeMobyPvars(ref byte[] gameplay_ntsc, int index)
+        {
+            int currentOffset = gameplay_ntsc.Length;
+            byte[] pvarBlock = new byte[0];
+
+            foreach (byte[] pvar in DataStore.pVarList)
+            {
+                //Add 0x08 to the size of the pvar size array
+                Array.Resize(ref pvarBlock, (int)(pvarBlock.Length + pvar.Length));
+                writeBytes(pvarBlock, pvarBlock.Length - pvar.Length, pvar, pvar.Length);
+
+            }
+            Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + pvarBlock.Length));
+            writeBytes(gameplay_ntsc, currentOffset, pvarBlock, pvarBlock.Length);
+        }
     }
 }

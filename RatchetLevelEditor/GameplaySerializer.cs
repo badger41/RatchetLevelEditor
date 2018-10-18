@@ -57,14 +57,14 @@ namespace RatchetLevelEditor
                         {0x50, new Action<dynamic>(i => { serializeUnknownHeaderData(0x50); }) },
                         {0x54, new Action<dynamic>(i => { serializeUnknownHeaderData(0x54); }) },
                         {0x58, new Action<dynamic>(i => { serializeUnknownHeaderData(0x58); }) },
-                        {0x5C, new Action<dynamic>(i => { serializeMobyPvarSizes(0x5C); })},
-                        {0x60, new Action<dynamic>(i => { serializeMobyPvars(0x60); })},
+                        {0x5C, new Action<dynamic>(i => { RatchetMoby.serializeMobyPvarSizes(ref gameplay_ntsc, 0x5C); })},
+                        {0x60, new Action<dynamic>(i => { RatchetMoby.serializeMobyPvars(ref gameplay_ntsc, 0x60); })},
                         {0x64, new Action<dynamic>(i => { serializeMobyPvarHeaderPointers(0x64); })},
                         {0x68, new Action<dynamic>(i => { serializeGameplayCoordinates(0x68); })},
                         {0x6C, new Action<dynamic>(i => { serializeUnknownHeaderData(0x6C); }) },
                         {0x70, new Action<dynamic>(i => { serializeUnknownHeaderData(0x70); }) },
                         {0x74, new Action<dynamic>(i => { serializeUnknownHeaderData(0x74); }) },
-                        {0x78, new Action<dynamic>(i => { serializeSplines(0x78); })},
+                        {0x78, new Action<dynamic>(i => { Spline.serialize(ref gameplay_ntsc, 0x78); })},
                         {0x7C, new Action<dynamic>(i => { serializeUnknownHeaderData(0x7C); }) },
                         {0x80, new Action<dynamic>(i => { serializeUnknownHeaderData(0x80); }) },
                         {0x84, new Action<dynamic>(i => { serializeUnknownHeaderData(0x84); }) },
@@ -150,63 +150,7 @@ namespace RatchetLevelEditor
 
 
 
-        public static void serializeMobyPvarSizes(int index)
-        {
-            int currentOffset = gameplay_ntsc.Length;
 
-            //We have to ensure that pointers end on a 0, or else the game will not parse it
-            //byte[] space = new byte[0x08];
-            //Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + space.Length));
-            //writeBytes(gameplay_ntsc, currentOffset, space, space.Length);
-
-            //pVar sizes have to be stored as well
-            int expectedSize = DataStore.pVarList.Count * 0x08;
-
-            //We have to make sure that offsets end in a 0, or else the game will crash
-            //while ((gameplay_ntsc.Length + expectedSize) % 10 != 0)
-                //expectedSize += 0x04;
-
-            byte[] pVarSizes = new byte[expectedSize];
-            uint pVarSizeOffset = 0;
-
-            foreach (byte[] pvar in DataStore.pVarList)
-            {
-
-                byte[] pVarSize = new byte[0x08];
-                //Write the current offset of the size config
-                WriteUint32(ref pVarSize, 0x00, pVarSizeOffset);
-
-                //Write the size of the current pvar
-                WriteUint32(ref pVarSize, 0x04, (uint)pvar.Length);
-
-                //Write the new pvar size data to appropriate index
-                int pVarIndex = DataStore.pVarList.IndexOf(pvar);
-                writeBytes(pVarSizes, pVarIndex * 0x08, pVarSize, 8);
-
-                //Increment the size of the offset
-                pVarSizeOffset += (uint)pvar.Length;
-            }
-
-            currentOffset = gameplay_ntsc.Length;
-            Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + pVarSizes.Length));
-            writeBytes(gameplay_ntsc, currentOffset, pVarSizes, pVarSizes.Length);
-        }
-
-        public static void serializeMobyPvars(int index)
-        {
-            int currentOffset = gameplay_ntsc.Length;
-            byte[] pvarBlock = new byte[0];
-
-            foreach (byte[] pvar in DataStore.pVarList)
-            {
-                //Add 0x08 to the size of the pvar size array
-                Array.Resize(ref pvarBlock, (int)(pvarBlock.Length + pvar.Length));
-                writeBytes(pvarBlock, pvarBlock.Length - pvar.Length, pvar, pvar.Length);
-
-            }
-            Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + pvarBlock.Length));
-            writeBytes(gameplay_ntsc, currentOffset, pvarBlock, pvarBlock.Length);
-        }
 
         public static byte[] serializeMobyPvarHeaderPointers(int index)
         {
@@ -218,61 +162,7 @@ namespace RatchetLevelEditor
             return serializeUnknownHeaderData(index);
         }
 
-        public static void serializeSplines(int index)
-        {
-            int currentOffset = gameplay_ntsc.Length;
 
-            //This pointer comes right after the spline count, it tells the game where to start reading the actual spline data
-            uint pointerToSplineData = 0;
-            int expectedMasterHeaderSize = 0x10 + (DataStore.splines.Count * 0x04);
-
-            //We have to do this to ensure our pointers end in a 0, if not, the game will crash
-            while (expectedMasterHeaderSize % 10 != 0)
-                expectedMasterHeaderSize += 0x04;
-
-            byte[] splineMasterHeader = new byte[expectedMasterHeaderSize];
-            WriteUint32(ref splineMasterHeader, 0x00, (uint) DataStore.splines.Count);
-
-            byte[] splineDataBlock = new byte[0];
-
-            foreach (Spline spline in DataStore.splines)
-            {
-                int currentSplineOffset = splineDataBlock.Length;
-                //Write the pointer to the current spline data in the header
-                WriteUint32(ref splineMasterHeader, 0x10 + (DataStore.splines.IndexOf(spline) * 4), (uint)currentSplineOffset);
-
-                //How many vertices are in this spline
-                int vertexCount = spline.vertexBuffer.Length / 3;
-
-                //Create a local byte array thats the size we need for this spline
-                uint expectedSize = (uint)(0x10 + (vertexCount * 0x10));
-                byte[] splineHeader = new byte[expectedSize];
-                WriteUint32(ref splineHeader, 0x00, (uint)vertexCount);
-                WriteUint32(ref splineHeader, 0x04, 0x00000000);
-                WriteUint32(ref splineHeader, 0x08, 0x00000000);
-                WriteUint32(ref splineHeader, 0x0C, 0x00000000);
-                for(int i = 0; i < vertexCount; i++)
-                {
-                    WriteFloat(ref splineHeader, 0x10 + (i * 0x10) + 0x00, spline.vertexBuffer[(i * 3) + 0]);
-                    WriteFloat(ref splineHeader, 0x10 + (i * 0x10) + 0x04, spline.vertexBuffer[(i * 3) + 1]);
-                    WriteFloat(ref splineHeader, 0x10 + (i * 0x10) + 0x08, spline.vertexBuffer[(i * 3) + 2]);
-                    WriteUint32(ref splineHeader, 0x10 + (i * 0x10) + 0x0C, 0xBF800000);
-                }
-                Array.Resize(ref splineDataBlock, (int)(splineDataBlock.Length + expectedSize));
-                writeBytes(splineDataBlock, currentSplineOffset, splineHeader, splineHeader.Length);
-            }
-            WriteUint32(ref splineMasterHeader, 0x04, (uint)splineMasterHeader.Length);
-            WriteUint32(ref splineMasterHeader, 0x08, (uint)splineDataBlock.Length);
-
-            //Write our serialized data to the main array
-            Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + splineMasterHeader.Length));
-            writeBytes(gameplay_ntsc, currentOffset, splineMasterHeader, splineMasterHeader.Length);
-
-            currentOffset = gameplay_ntsc.Length;
-            Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + splineDataBlock.Length));
-            writeBytes(gameplay_ntsc, currentOffset, splineDataBlock, splineDataBlock.Length - splineMasterHeader.Length);
-            //return serializeUnknownHeaderData(index);
-        }
 
         public static byte[] serializeRenderDef(int index)
         {
