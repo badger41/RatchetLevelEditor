@@ -53,6 +53,40 @@
     },
 		{
       "modelIds": [
+        0x19DB
+      ],
+      "pVars": [
+	  	{
+          "index": 0x0036,
+          "label": "Invincibility Timer",
+          "control": "number",
+          "specialInd": "none",
+          "length": 0x01,
+          "min": 0,
+          "max": 250,
+        },
+        {
+          "index": 0x0030,
+          "label": "Health",
+          "control": "float",
+          "specialInd": "none",
+          "length": 0x04,
+          "min": -1,
+          "max": -1,
+        },
+		{
+          "index": 0x0070,
+          "label": "float1",
+          "control": "float",
+          "specialInd": "none",
+          "length": 0x04,
+          "min": -1,
+          "max": -1,
+        },	
+      ]
+    },
+		{
+      "modelIds": [
         0x1A17
       ],
       "pVars": [
@@ -67,7 +101,7 @@
         },
       ]
     },
-			{
+	{
       "modelIds": [
         0x19E2
       ],
@@ -116,6 +150,49 @@
           "length": 0x01,
           "min": -1,
           "max": 255,
+        },
+      ]
+    },
+	{
+      "modelIds": [
+        0x0C60
+      ],
+      "pVars": [
+	  	    {
+          "index": 0x0000,
+          "label": "Destination Moby",
+          "control": "number",
+          "specialInd": "none",
+          "length": 0x04,
+          "min": -1,
+          "max": 1000,
+        },
+	    {
+          "index": 0x0008,
+          "label": "Display Condition (-1 for always)",
+          "control": "number",
+          "specialInd": "none",
+          "length": 0x04,
+          "min": -1,
+          "max": 1000,
+        },
+		{
+          "index": 0x0010,
+          "label": "Message ID",
+          "control": "number",
+          "specialInd": "none",
+          "length": 0x04,
+          "min": -1,
+          "max": 1000,
+        },
+		{
+          "index": 0x0028,
+          "label": "Load Chunk ID",
+          "control": "number",
+          "specialInd": "none",
+          "length": 0x04,
+          "min": -1,
+          "max": 1000,
         },
       ]
     },
