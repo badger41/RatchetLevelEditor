@@ -406,12 +406,18 @@ namespace RatchetLevelEditor
                         WriteUint32(ref data, 0x6C, mob.unk14);
 
                         currentOffset = gameplay_ntsc.Length;
+
                         Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + mob.length));
                         writeBytes(gameplay_ntsc, currentOffset, data, data.Length);
 
                     }
                     break;
             }
+            //Ensure that the next offset ends in 0
+            uint resize = 0x00;
+            while ((gameplay_ntsc.Length + resize) % 0x10 != 0)
+                resize += 0x04;
+            Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + resize));
         }
 
         public static void serializeMobyPvarSizes(ref byte[] gameplay_ntsc, int index)
@@ -426,9 +432,7 @@ namespace RatchetLevelEditor
             //pVar sizes have to be stored as well
             int expectedSize = DataStore.pVarList.Count * 0x08;
 
-            //We have to make sure that offsets end in a 0, or else the game will crash
-            //while ((gameplay_ntsc.Length + expectedSize) % 10 != 0)
-            //expectedSize += 0x04;
+
 
             byte[] pVarSizes = new byte[expectedSize];
             uint pVarSizeOffset = 0;
@@ -451,6 +455,11 @@ namespace RatchetLevelEditor
                 pVarSizeOffset += (uint)pvar.Length;
             }
 
+            //Ensure that the next offset ends in 0
+            uint resize = 0x00;
+            while ((gameplay_ntsc.Length + pVarSizes.Length + resize) % 0x10 != 0)
+                resize += 0x04;
+
             currentOffset = gameplay_ntsc.Length;
             Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + pVarSizes.Length));
             writeBytes(gameplay_ntsc, currentOffset, pVarSizes, pVarSizes.Length);
@@ -468,7 +477,11 @@ namespace RatchetLevelEditor
                 writeBytes(pvarBlock, pvarBlock.Length - pvar.Length, pvar, pvar.Length);
 
             }
-            Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + pvarBlock.Length));
+            uint resize = 0x00;
+            while ((gameplay_ntsc.Length + pvarBlock.Length + resize) % 0x10 != 0)
+                resize += 0x04;
+
+            Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + pvarBlock.Length + resize));
             writeBytes(gameplay_ntsc, currentOffset, pvarBlock, pvarBlock.Length);
         }
     }

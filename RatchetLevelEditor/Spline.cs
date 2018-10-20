@@ -94,8 +94,13 @@ namespace RatchetLevelEditor
             Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + splineMasterHeader.Length));
             writeBytes(gameplay_ntsc, currentOffset, splineMasterHeader, splineMasterHeader.Length);
 
+            //Ensure that the next offset ends in 0
+            uint resize = 0x00;
+            while ((gameplay_ntsc.Length + splineDataBlock.Length + resize) % 0x10 != 0)
+                resize += 0x04;
+
             currentOffset = gameplay_ntsc.Length;
-            Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + splineDataBlock.Length));
+            Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + splineDataBlock.Length + resize));
             writeBytes(gameplay_ntsc, currentOffset, splineDataBlock, splineDataBlock.Length - splineMasterHeader.Length);
         }
     }
