@@ -60,6 +60,46 @@ namespace RatchetLevelEditor
             switch (racNum)
             {
                 case 1:
+                    headerMap = new Dictionary<int, dynamic>()
+                    {
+                        {0x00, new Action<dynamic>(i => { parseFogAndDeathBarrier(0x00); })},
+                        {0x04, new Action<dynamic>(i => { getUnknownHeaderData(0x04); }) },
+                        {0x08, new Action<dynamic>(i => { parseCameraDef(0x08); })},
+                        {0x0C, new Action<dynamic>(i => { getUnknownHeaderData(0x0C); }) },
+                        {0x10, new Action<dynamic>(i => { parseGameStrings(0x10); })},
+                        {0x14, new Action<dynamic>(i => { parseGameStrings(0x14); })},
+                        {0x18, new Action<dynamic>(i => { parseGameStrings(0x18); })},
+                        {0x1C, new Action<dynamic>(i => { parseGameStrings(0x1C); })},
+                        {0x20, new Action<dynamic>(i => { parseGameStrings(0x20); })},
+                        {0x24, new Action<dynamic>(i => { parseGameStrings(0x24); })},
+                        {0x28, new Action<dynamic>(i => { parseGameStrings(0x28); })},
+                        {0x2C, new Action<dynamic>(i => { parseGameStrings(0x2C); })},
+                        {0x30, new Action<dynamic>(i => { getUnknownHeaderData(0x30); }) },
+                        {0x34, new Action<dynamic>(i => { getUnknownHeaderData(0x34); }) },
+                        {0x38, new Action<dynamic>(i => { getUnknownHeaderData(0x38); }) },
+                        {0x3C, new Action<dynamic>(i => { getUnknownHeaderData(0x3C); }) },
+                        {0x40, new Action<dynamic>(i => { getUnknownHeaderData(0x40); }) },
+                        {0x44, new Action<dynamic>(i => { getUnknownHeaderData(0x44); }) },
+                        {0x48, new Action<dynamic>(i => { getUnknownHeaderData(0x48); }) },
+                        {0x50, new Action<dynamic>(i => { getUnknownHeaderData(0x50); }) },
+                        {0x54, new Action<dynamic>(i => { parseMobyPvarSizes(0x54); })},
+                        {0x58, new Action<dynamic>(i => { parseMobyPvars(0x54, 0x58, 0x5C); })},
+                        {0x5C, new Action<dynamic>(i => { parseMobyPvarHeaderPointers(0x5C); })},
+                        {0x60, new Action<dynamic>(i => { parseGameplayCoordinates(0x60); })},
+                        {0x64, new Action<dynamic>(i => { getUnknownHeaderData(0x64); }) },
+                        {0x68, new Action<dynamic>(i => { getUnknownHeaderData(0x68); }) },
+                        {0x6C, new Action<dynamic>(i => { getUnknownHeaderData(0x6C); }) },
+                        {0x70, new Action<dynamic>(i => { parseSplines(0x70); })},
+                        {0x74, new Action<dynamic>(i => { getUnknownHeaderData(0x74); }) },
+                        {0x78, new Action<dynamic>(i => { getUnknownHeaderData(0x78); }) },
+                        {0x7C, new Action<dynamic>(i => { getUnknownHeaderData(0x7C); }) },
+                        {0x80, new Action<dynamic>(i => { getUnknownHeaderData(0x80); }) },
+                        {0x84, new Action<dynamic>(i => { getUnknownHeaderData(0x84); }) },
+                        {0x88, new Action<dynamic>(i => { getUnknownHeaderData(0x88); }) },
+                        {0x8C, new Action<dynamic>(i => { getUnknownHeaderData(0x8C); }) },
+                        //Put this last because we need to do other stuff first
+                        {0x4C, new Action<dynamic>(i => { parseMobyDef(0x44); })},
+                    };
                     break;
                 case 2:
                 case 3:
