@@ -1,68 +1,63 @@
+[
+	{
+		//Add all model IDs that will be using this config
+		"modelIds": [0x0b37],
+		//Each pVar will be a control for how to manipulate that specific chunk of data
+		"pVars": [
+			{
+				//Which index of the pVar block that will be edited
+				"index": 0x00,
 
-  [
-    {
-      //Add all model IDs that will be using this config
-      "modelIds": [
-        0x0B37
-      ],
-      //Each pVar will be a control for how to manipulate that specific chunk of data
-      "pVars": [
-        {
-          //Which index of the pVar block that will be edited
-          "index": 0x00,
+				//What this pVar will be called in the UI
+				"label": "Underlay ID",
 
-          //What this pVar will be called in the UI
-          "label": "Underlay ID",
+				//Which control to use to modify this pVar
+				"control": "number",
 
-          //Which control to use to modify this pVar
-          "control": "number",
+				//Specify if this pVar is a special type of value
+				//Examples: Spawn points, zone IDs, path IDs,
+				"specialInd": "none",
 
-          //Specify if this pVar is a special type of value
-          //Examples: Spawn points, zone IDs, path IDs, 
-          "specialInd": "none",
+				//How much data this config will be modifying
+				//usage is index + length
+				"length": 0x04,
 
-          //How much data this config will be modifying
-          //usage is index + length
-          "length": 0x04,
-
-          //Minimum and maximum values that can be set
-          "min": 0,
-          "max": 1000,
-        },
-        {
-          "index": 0x04,
-          "label": "Overlay ID",
-          "control": "number",
-          "specialInd": "none",
-          "length": 0x04,
-          "min": 0,
-          "max":  1000,
-        }
-      ]
-    },
-    {
-      "modelIds": [
-        0x19C4
-      ],
-      "pVars": [
-        {
-          "index": 0x04,
-          "label": "Beam Length",
-          "control": "float",
-          "specialInd": "none",
-          "length": 0x04,
-          "min": 0,
-          "max": 1000,
-        },
-        {
-          "index": 0x0C,
-          "label": "Swing Strength",
-          "control": "float",
-          "specialInd": "none",
-          "length": 0x04,
-          "min": 0,
-          "max":  1000,
-        }
-      ]
-    }
-  ]
+				//Minimum and maximum values that can be set
+				"min": 0,
+				"max": 1000
+			},
+			{
+				"index": 0x04,
+				"label": "Overlay ID",
+				"control": "number",
+				"specialInd": "none",
+				"length": 0x04,
+				"min": 0,
+				"max": 1000
+			}
+		]
+	},
+	{
+		"modelIds": [0x19c4],
+		"pVars": [
+			{
+				"index": 0x04,
+				"label": "Beam Length",
+				"control": "float",
+				"specialInd": "none",
+				"length": 0x04,
+				"min": 0,
+				"max": 1000
+			},
+			{
+				"index": 0x0c,
+				"label": "Swing Strength",
+				"control": "float",
+				"specialInd": "none",
+				"length": 0x04,
+				"min": 0,
+				"max": 1000
+			}
+		]
+	}
+]
