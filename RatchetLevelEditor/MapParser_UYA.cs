@@ -45,7 +45,7 @@ namespace RatchetLevelEditor
             Console.WriteLine("Game determined to be ratchet" + racNum.ToString());
 
             List<MobyPropertyVariables> pVarConfigs = new List<MobyPropertyVariables>();
-            string jsonString = File.ReadAllText(String.Format("./Config/Rac{0}/MobyPropertyVariables.json", racNum));
+            string jsonString = File.ReadAllText($"./Config/RAC{racNum}/MobyPropertyVariables.json");
             pVarConfigs = JsonConvert.DeserializeObject<List<MobyPropertyVariables>>(jsonString);
             DataStore.pVarMap = pVarConfigs;
 

@@ -29,7 +29,7 @@
           "min": 0,
           "max": 150,
         },
-		{
+		    {
           "index": 0x90,
           "label": "Taxi Initial Destination",
           "control": "number",
@@ -38,7 +38,7 @@
           "min": 0,
           "max": 100,
         },
-		{
+		    {
           "index": 0x94,
           "label": "Taxi Next Destination",
           "control": "number",
@@ -47,7 +47,7 @@
           "min": 0,
           "max": 100,
         },
-		{
+		    { 
           "index": 0x98,
           "label": "Initial Interaction Message",
           "control": "number",
@@ -56,7 +56,7 @@
           "min": 0,
           "max": 100,
         },
-		{
+		    {
           "index": 0x9C,
           "label": "Next Interaction Message",
           "control": "number",
@@ -67,7 +67,23 @@
         },
       ]
     },
-	{
+    {
+      "modelIds": [
+        0x005C
+      ],
+      "pVars": [
+        {
+          "index": 0x24,
+          "label": "Moby Index to Check for State",
+          "control": "number",
+          "specialInd": "mobyIndex",
+          "length": 0x04,
+          "min": 0,
+          "max": 10000
+        }
+      ]
+    },
+	  {
       "modelIds": [
         0x0383
       ],
@@ -83,12 +99,12 @@
         }
       ]
     },
-	{
+	  {
       "modelIds": [
         0x01C7
       ],
       "pVars": [
-		{
+		    {
           "index": 0x86,
           "label": "Pod Spawn Limit",
           "control": "number",
@@ -99,4 +115,29 @@
         }
       ]
     },
+    {
+      "modelIds": [
+        0x058B
+      ],
+      "pVars": [
+        {
+          "index": 0x00,
+          "label": "Spawn Point to Check for Position",
+          "control": "number",
+          "specialInd": "spawnpoint",
+          "length": 0x04,
+          "min": 0,
+          "max": 10000
+        },
+        {
+          "index": 0x08,
+          "label": "Moby Index to Check for State",
+          "control": "number",
+          "specialInd": "mobyIndex",
+          "length": 0x04,
+          "min": 0,
+          "max": 10000
+        }
+      ]
+    }
   ]

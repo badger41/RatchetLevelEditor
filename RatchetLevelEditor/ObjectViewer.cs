@@ -166,9 +166,32 @@ namespace RatchetLevelEditor
             mainForm.terrainViewer.updateView();
         }
 
+		private void SaveAllButton_Click(object sender, EventArgs e)
+		{
+			Serialize(DataStore.workingDirectory, (int)DataStore.gameplayHeader.gameNum);
+			Console.WriteLine($"Saved gameplay_ntsc to {DataStore.workingDirectory}!");
+		}
+
+		private void SaveAllAsButton_Click(object sender, EventArgs e)
+		{
+			SaveFileDialog dialog = new SaveFileDialog();
+			dialog.FileName = "gameplay_ntsc";
+			dialog.Title = "Select where to save gameplay_ntsc";
+
+			if(dialog.ShowDialog() == DialogResult.OK)
+			{
+				DataStore.workingDirectory = dialog.FileName.Substring(0, dialog.FileName.LastIndexOf('\\'));
+				Serialize(DataStore.workingDirectory, (int)DataStore.gameplayHeader.gameNum);
+				Console.WriteLine($"Saved gameplay_ntsc to {DataStore.workingDirectory}!");
+			}
+		}
+
+		/*
         private void button1_Click(object sender, EventArgs e)
         {
-            int mobElemSize = (int)DataStore.gameplayHeader.mobyElemSize;
+			Serialize(DataStore.workingDirectory, (int)DataStore.gameplayHeader.gameNum);
+
+			int mobElemSize = (int)DataStore.gameplayHeader.mobyElemSize;
             int mobCount = DataStore.mobs.Count();
             byte[] test = new byte[mobCount * mobElemSize];
 
@@ -310,16 +333,16 @@ namespace RatchetLevelEditor
                     break;
             }
 
-            serialize(DataStore.workingDirectory, (int) DataStore.gameplayHeader.gameNum);
-            /*FileStream gameplayFile = null;
+            FileStream gameplayFile = null;
             gameplayFile = File.OpenWrite(DataStore.workingDirectory + "/gameplay_ntsc");
             Console.WriteLine((DataStore.gameplayHeader.mobyPointer + 0x10).ToString("X8"));
             gameplayFile.Seek(DataStore.gameplayHeader.mobyPointer + 0x10, SeekOrigin.Begin);
             gameplayFile.Write(test, 0, mobCount * mobElemSize);
             gameplayFile.Close();
-            Console.WriteLine("File written successfully, enjoy :)");*/
+            Console.WriteLine("File written successfully, enjoy :)");
             
         }
+		*/
 
         private void colorPanel_Click(object sender, EventArgs e)
         {

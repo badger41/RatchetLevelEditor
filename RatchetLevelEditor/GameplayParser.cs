@@ -43,6 +43,7 @@ namespace RatchetLevelEditor
         //Dictionary to define the mapping of each index of the gameplay file and its respective variable
         //Usage: {index, variable} => (UYA) {0x4c, MobyDef}
         public static Dictionary<int, dynamic> headerMap;
+		public static int headerSize; // some headers have padding
 
         public struct unknownDataIndex {
             public uint offset { get; set; }
@@ -79,8 +80,8 @@ namespace RatchetLevelEditor
                         {0x38, new Action<dynamic>(i => { getUnknownHeaderData(0x38); }) },
                         {0x3C, new Action<dynamic>(i => { getUnknownHeaderData(0x3C); }) },
                         {0x40, new Action<dynamic>(i => { getUnknownHeaderData(0x40); }) },
-                        {0x44, new Action<dynamic>(i => { getUnknownHeaderData(0x44); }) },
-                        {0x48, new Action<dynamic>(i => { getUnknownHeaderData(0x48); }) },
+                        {0x44, new Action<dynamic>(i => { getUnknownHeaderData(0x48); }) },
+                        {0x48, new Action<dynamic>(i => { getUnknownHeaderData(0x4C); }) },
                         {0x50, new Action<dynamic>(i => { getUnknownHeaderData(0x50); }) },
                         {0x54, new Action<dynamic>(i => { parseMobyPvarSizes(0x54); })},
                         {0x58, new Action<dynamic>(i => { parseMobyPvars(0x54, 0x58, 0x5C); })},
@@ -100,6 +101,7 @@ namespace RatchetLevelEditor
                         //Put this last because we need to do other stuff first
                         {0x4C, new Action<dynamic>(i => { parseMobyDef(0x44); })},
                     };
+					headerSize = 0xA0;
                     break;
                 case 2:
                 case 3:
@@ -147,12 +149,13 @@ namespace RatchetLevelEditor
                         //Put this last because we need to do other stuff first
                         {0x4C, new Action<dynamic>(i => { parseMobyDef(0x4C); })},
                     };
+					headerSize = 0xA0;
                     break;
                 case 4:
                 default:
                     break;
             }
-        }
+		}
 
         public static void parseGameplay(string path, int racNum)
         {

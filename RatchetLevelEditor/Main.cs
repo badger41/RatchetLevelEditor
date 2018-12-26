@@ -154,39 +154,20 @@ namespace RatchetLevelEditor
         {
             modelNames = new List<string>();
             string stringCounter;
-            StreamReader stream = null;
-            try
-            {
-				switch (game)
-				{
-					case RCGame.RatchetAndClank:
-						stream = new StreamReader(Application.StartupPath + "/ModelListRC1.txt");
-						Console.WriteLine("Loaded model names for Ratchet & Clank.");
-						break;
-					case RCGame.GoingCommando:
-						stream = new StreamReader(Application.StartupPath + "/ModelListGC.txt");
-						Console.WriteLine("Loaded model names for Ratchet & Clank: Going Commando.");
-						break;
-					case RCGame.UpYourArsenal:
-						stream = new StreamReader(Application.StartupPath + "/ModelListUYA.txt");
-						Console.WriteLine("Loaded model names for Ratchet & Clank: Up Your Arsenal.");
-						break;
-					case RCGame.Deadlocked:
-						stream = new StreamReader(Application.StartupPath + "/ModelListDL.txt");
-						Console.WriteLine("Loaded model names for Ratchet: Deadlocked.");
-						break;
-				}
-            }
-            catch (FileNotFoundException e)
-            {
-                Console.WriteLine("Model list file not found! No names for you!");
-                modelNames = null;
-                return;
-            }
-            while ((stringCounter = stream.ReadLine()) != null)
+
+			if(!File.Exists($"{Application.StartupPath}/Config/RAC{(int)game}/Models.txt"))
+			{
+				Console.WriteLine("Unable to find model list...");
+				modelNames = null;
+				return;
+			}
+
+			StreamReader stream = new StreamReader($"{Application.StartupPath}/Config/RAC{(int)game}/Models.txt");
+            while((stringCounter = stream.ReadLine()) != null)
             {
                 modelNames.Add(stringCounter);
             }
+
             stream.Close();
         }
         //Used to display an appropriate error message
@@ -197,7 +178,7 @@ namespace RatchetLevelEditor
             if (errorCode < Constants.errorCodes.GetLength(0))
                 result = MessageBox.Show(Constants.errorCodes[errorCode, 0], Constants.errorCodes[errorCode, 1], MessageBoxButtons.OK, MessageBoxIcon.Error);
             else
-                result = MessageBox.Show("Unknown error code: (" + errorCode + ")\nPlease Report.", "Unknown Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                result = MessageBox.Show("Unknown error code: (" + errorCode + ")\nPlease report.", "Unknown Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             if (result == DialogResult.OK)
                 errorShown = false;
         }
