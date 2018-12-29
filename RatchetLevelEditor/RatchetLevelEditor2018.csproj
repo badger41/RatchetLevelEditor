@@ -90,7 +90,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Magick.NET-Q8-x86, Version=7.8.0.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=x86">
-      <HintPath>..\packages\Magick.NET-Q8-x86.7.8.0\lib\net40\Magick.NET-Q8-x86.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Magick.NET-Q8-x86.7.8.0\lib\netstandard20\Magick.NET-Q8-x86.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -115,111 +116,111 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EngineHeader.cs" />
-    <Compile Include="GameplayHeader.cs" />
-    <Compile Include="GameplayParser.cs" />
-    <Compile Include="GameplaySerializer.cs" />
-    <Compile Include="LevelObject.cs" />
-    <Compile Include="LevelObjectViewer.cs">
+    <Compile Include="Engine\Models\EngineHeader.cs" />
+    <Compile Include="Gameplay\Models\GameplayHeader.cs" />
+    <Compile Include="Gameplay\Deserialization\GameplayParser.cs" />
+    <Compile Include="Gameplay\Serialization\GameplaySerializer.cs" />
+    <Compile Include="Engine\Models\LevelObject.cs" />
+    <Compile Include="Engine\Components\LevelObjectViewer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="LevelObjectViewer.Designer.cs">
+    <Compile Include="Engine\Components\LevelObjectViewer.Designer.cs">
       <DependentUpon>LevelObjectViewer.cs</DependentUpon>
     </Compile>
-    <Compile Include="MapParser_ DL.cs" />
-    <Compile Include="MissionParser.cs" />
-    <Compile Include="MobyLoadFileParser.cs" />
-    <Compile Include="GadgetsParser.cs" />
-    <Compile Include="ConsoleWindow.cs">
+    <Compile Include="Engine\Deserialization\MapParser_ DL.cs" />
+    <Compile Include="Missions\Deserialization\MissionParser.cs" />
+    <Compile Include="Mobyload\Deserialization\MobyLoadFileParser.cs" />
+    <Compile Include="Gadgets\Deserialization\GadgetsParser.cs" />
+    <Compile Include="Main\Components\ConsoleWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ConsoleWindow.Designer.cs">
+    <Compile Include="Main\Components\ConsoleWindow.Designer.cs">
       <DependentUpon>ConsoleWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Constants.cs" />
-    <Compile Include="DataFunctions.cs" />
+    <Compile Include="Utils\DataFunctions.cs" />
     <Compile Include="DataStore.cs" />
-    <Compile Include="MapParser_UYA.cs" />
-    <Compile Include="MapOpen.cs">
+    <Compile Include="Engine\Deserialization\MapParser_UYA.cs" />
+    <Compile Include="Main\Components\MapOpen.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MapOpen.Designer.cs">
+    <Compile Include="Main\Components\MapOpen.Designer.cs">
       <DependentUpon>MapOpen.cs</DependentUpon>
     </Compile>
-    <Compile Include="Main.cs">
+    <Compile Include="Main\Components\Main.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Main.Designer.cs">
+    <Compile Include="Main\Components\Main.Designer.cs">
       <DependentUpon>Main.cs</DependentUpon>
     </Compile>
-    <Compile Include="MobyPropertyVariables.cs" />
-    <Compile Include="MobyPVarUserControls\IntegerControl.cs">
+    <Compile Include="Config\Models\MobyPropertyVariableConfig.cs" />
+    <Compile Include="Config\MobyPVarUserControls\IntegerControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="MobyPVarUserControls\IntegerControl.Designer.cs">
+    <Compile Include="Config\MobyPVarUserControls\IntegerControl.Designer.cs">
       <DependentUpon>IntegerControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="MobyPVarUserControls\FloatControl.cs">
+    <Compile Include="Config\MobyPVarUserControls\FloatControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="MobyPVarUserControls\FloatControl.Designer.cs">
+    <Compile Include="Config\MobyPVarUserControls\FloatControl.Designer.cs">
       <DependentUpon>FloatControl.cs</DependentUpon>
     </Compile>
-    <Compile Include="MobyPVarUserControls\IMobyPVarControl.cs" />
-    <Compile Include="ModelParser.cs" />
-    <Compile Include="ModelViewer.cs">
+    <Compile Include="Config\MobyPVarUserControls\IMobyPVarControl.cs" />
+    <Compile Include="Utils\ModelParser.cs" />
+    <Compile Include="Engine\Components\ModelViewer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ModelViewer.Designer.cs">
+    <Compile Include="Engine\Components\ModelViewer.Designer.cs">
       <DependentUpon>ModelViewer.cs</DependentUpon>
     </Compile>
-    <Compile Include="ObjectViewer.cs">
+    <Compile Include="Gameplay\Components\ObjectViewer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ObjectViewer.Designer.cs">
+    <Compile Include="Gameplay\Components\ObjectViewer.Designer.cs">
       <DependentUpon>ObjectViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RatchetCoordinate.cs" />
-    <Compile Include="RatchetMission.cs" />
-    <Compile Include="RatchetMoby.cs" />
-    <Compile Include="RatchetModel.cs" />
-    <Compile Include="RatchetTexture.cs" />
-    <Compile Include="Spline.cs" />
-    <Compile Include="TerrainViewer.cs">
+    <Compile Include="Gameplay\Models\RatchetCoordinate.cs" />
+    <Compile Include="Missions\Models\RatchetMission.cs" />
+    <Compile Include="Gameplay\Models\RatchetMoby.cs" />
+    <Compile Include="Engine\Models\RatchetModel.cs" />
+    <Compile Include="Engine\Models\RatchetTexture.cs" />
+    <Compile Include="Gameplay\Models\Spline.cs" />
+    <Compile Include="Engine\Components\TerrainViewer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TerrainViewer.Designer.cs">
+    <Compile Include="Engine\Components\TerrainViewer.Designer.cs">
       <DependentUpon>TerrainViewer.cs</DependentUpon>
     </Compile>
     <Compile Include="TextBoxStreamWriter.cs" />
-    <Compile Include="TextureParser.cs" />
-    <Compile Include="TextureViewer.cs">
+    <Compile Include="Utils\TextureParser.cs" />
+    <Compile Include="Engine\Components\TextureViewer.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TextureViewer.Designer.cs">
+    <Compile Include="Engine\Components\TextureViewer.Designer.cs">
       <DependentUpon>TextureViewer.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="ConsoleWindow.resx">
+    <EmbeddedResource Include="Main\Components\ConsoleWindow.resx">
       <DependentUpon>ConsoleWindow.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="LevelObjectViewer.resx">
+    <EmbeddedResource Include="Engine\Components\LevelObjectViewer.resx">
       <DependentUpon>LevelObjectViewer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MapOpen.resx">
+    <EmbeddedResource Include="Main\Components\MapOpen.resx">
       <DependentUpon>MapOpen.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MobyPVarUserControls\IntegerControl.resx">
+    <EmbeddedResource Include="Config\MobyPVarUserControls\IntegerControl.resx">
       <DependentUpon>IntegerControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MobyPVarUserControls\FloatControl.resx">
+    <EmbeddedResource Include="Config\MobyPVarUserControls\FloatControl.resx">
       <DependentUpon>FloatControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ModelViewer.resx">
+    <EmbeddedResource Include="Engine\Components\ModelViewer.resx">
       <DependentUpon>ModelViewer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ObjectViewer.resx">
+    <EmbeddedResource Include="Gameplay\Components\ObjectViewer.resx">
       <DependentUpon>ObjectViewer.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -232,13 +233,13 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Main.resx">
+    <EmbeddedResource Include="Main\Components\Main.resx">
       <DependentUpon>Main.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TerrainViewer.resx">
+    <EmbeddedResource Include="Engine\Components\TerrainViewer.resx">
       <DependentUpon>TerrainViewer.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="TextureViewer.resx">
+    <EmbeddedResource Include="Engine\Components\TextureViewer.resx">
       <DependentUpon>TextureViewer.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Config\Rac1\MobyPropertyVariables.json">
@@ -264,16 +265,16 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="Shaders\fs_colored.glsl">
+    <None Include="Resources\Shaders\fs_colored.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Shaders\fs_color_only.glsl">
+    <None Include="Resources\Shaders\fs_color_only.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Shaders\vs_colored.glsl">
+    <None Include="Resources\Shaders\vs_colored.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Shaders\vs_color_only.glsl">
+    <None Include="Resources\Shaders\vs_color_only.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -282,10 +283,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\load.gif" />
-    <None Include="Shaders\fs.glsl">
+    <None Include="Resources\Shaders\fs.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Shaders\vs.glsl">
+    <None Include="Resources\Shaders\vs.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -301,7 +302,12 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Engine\Serialization\" />
+    <Folder Include="Gadgets\Serialization\" />
+    <Folder Include="Missions\Serialization\" />
+    <Folder Include="Mobyload\Serialization\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Magick.NET-Q8-x86.7.8.0\build\net40\Magick.NET-Q8-x86.targets" Condition="Exists('..\packages\Magick.NET-Q8-x86.7.8.0\build\net40\Magick.NET-Q8-x86.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -84,7 +84,7 @@ namespace RatchetLevelEditor
 
         /* Misc data not directly related to ratchet files */
         public static string workingDirectory;
-        public static List<MobyPropertyVariables> pVarMap;
+        public static List<MobyPropertyVariableConfig> pVarMap;
         public static RatchetMoby selectedMoby;
         public static LevelObject selectedLevelObject;
         /* End Misc data not directly related to ratchet files */
