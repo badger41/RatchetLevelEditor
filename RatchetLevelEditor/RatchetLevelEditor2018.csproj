@@ -137,7 +137,7 @@
     <Compile Include="Main\Components\ConsoleWindow.Designer.cs">
       <DependentUpon>ConsoleWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Constants.cs" />
+    <Compile Include="Main\Constants.cs" />
     <Compile Include="Utils\DataFunctions.cs" />
     <Compile Include="DataStore.cs" />
     <Compile Include="Engine\Deserialization\MapParser_UYA.cs" />
@@ -194,7 +194,7 @@
     <Compile Include="Engine\Components\TerrainViewer.Designer.cs">
       <DependentUpon>TerrainViewer.cs</DependentUpon>
     </Compile>
-    <Compile Include="TextBoxStreamWriter.cs" />
+    <Compile Include="Main\TextBoxStreamWriter.cs" />
     <Compile Include="Utils\TextureParser.cs" />
     <Compile Include="Engine\Components\TextureViewer.cs">
       <SubType>Form</SubType>
