@@ -14,6 +14,7 @@ using OpenTK.Graphics.OpenGL;
 using static RatchetModel;
 using static ModelParser;
 using static TextureParser;
+using RatchetLevelEditor.Engine;
 
 namespace RatchetLevelEditor
 {
@@ -156,10 +157,10 @@ namespace RatchetLevelEditor
             TreeNode terrainModels;
 
             #region Spawnables
-            if (DataStore.spawnableModels.Count > 0)
+            if (DataStoreEngine.spawnableModels.Count > 0)
             {
                 List<TreeNode> spawnableModelNodes = new List<TreeNode>();
-                foreach (RatchetModel_General model in DataStore.spawnableModels)
+                foreach (RatchetModel_General model in DataStoreEngine.spawnableModels)
                 {
 
                     string modelName = Main.modelNames != null ? Main.modelNames.Find(x => x.Substring(0, 4).ToUpper() == model.modelID.ToString("X4")) : null;
@@ -180,10 +181,10 @@ namespace RatchetLevelEditor
             #endregion
 
             #region Level Models
-            if(DataStore.levelModels.Count > 0)
+            if(DataStoreEngine.levelModels.Count > 0)
             {
                 List<TreeNode> levelModelNodes = new List<TreeNode>();
-                foreach (RatchetModel_General model in DataStore.levelModels)
+                foreach (RatchetModel_General model in DataStoreEngine.levelModels)
                 {
                     levelModelNodes.Add(new TreeNode()
                     {
@@ -200,10 +201,10 @@ namespace RatchetLevelEditor
             #endregion
 
             #region Scenery Models
-            if(DataStore.sceneryModels.Count > 0)
+            if(DataStoreEngine.sceneryModels.Count > 0)
             {
                 List<TreeNode> sceneryModelNodes = new List<TreeNode>();
-                foreach (RatchetModel_General model in DataStore.sceneryModels)
+                foreach (RatchetModel_General model in DataStoreEngine.sceneryModels)
                 {
                     sceneryModelNodes.Add(new TreeNode()
                     {
@@ -219,22 +220,22 @@ namespace RatchetLevelEditor
             #endregion
 
             #region Terrain and Terrain Collision
-            if(!DataStore.terrainModel.Equals(null) || !DataStore.terrainCollisionModel.Equals(null))
+            if(!DataStoreEngine.terrainModel.Equals(null) || !DataStoreEngine.terrainCollisionModel.Equals(null))
             {
                 terrainModels = new TreeNode("Terrain");
                 
-                if(!DataStore.terrainModel.Equals(null))
+                if(!DataStoreEngine.terrainModel.Equals(null))
                 {
                     TreeNode terrainMesh = new TreeNode()
                     {
                         Text = "Terrain Mesh",
-                        Tag = DataStore.terrainModel.modelType,
+                        Tag = DataStoreEngine.terrainModel.modelType,
                         Name = "TerrainMesh",
                     };
                     terrainModels.Nodes.Add(terrainMesh);
                 };
 
-                if (!DataStore.terrainCollisionModel.Equals(null))
+                if (!DataStoreEngine.terrainCollisionModel.Equals(null))
                 {
                     TreeNode terrainCollision = new TreeNode()
                     {
@@ -243,13 +244,13 @@ namespace RatchetLevelEditor
                     terrainModels.Nodes.Add(terrainCollision);
                 };
 
-                if (DataStore.chunks.Count > 0)
+                if (DataStoreEngine.chunks.Count > 0)
                 {
-                    foreach (RatchetModel_Terrain chunk in DataStore.chunks)
+                    foreach (RatchetModel_Terrain chunk in DataStoreEngine.chunks)
                     {
                         TreeNode terrainMesh = new TreeNode()
                         {
-                            Text = "Chunk " + DataStore.chunks.IndexOf(chunk)
+                            Text = "Chunk " + DataStoreEngine.chunks.IndexOf(chunk)
                         };
                         terrainModels.Nodes.Add(terrainMesh);
                     }
@@ -260,10 +261,10 @@ namespace RatchetLevelEditor
             #endregion
 
             #region Missions
-            if (DataStore.missions.Count > 0)
+            if (DataStoreGlobal.missions.Count > 0)
             {
                 int missionIndex = 0;
-                foreach (RatchetMission mission in DataStore.missions)
+                foreach (RatchetMission mission in DataStoreGlobal.missions)
                 {
                     List<TreeNode> spawnableModelNodes = new List<TreeNode>();
                     foreach (RatchetModel_General model in mission.spawnableModels)
@@ -297,18 +298,18 @@ namespace RatchetLevelEditor
                 {
                     case ModelType.Spawnable:
                         if(e.Node.Name.IndexOf("Mission_") != -1)
-                            selectedModel = DataStore.missions[int.Parse(e.Node.Name.Substring(8))].spawnableModels[e.Node.Index];
+                            selectedModel = DataStoreGlobal.missions[int.Parse(e.Node.Name.Substring(8))].spawnableModels[e.Node.Index];
                         else
-                            selectedModel = DataStore.spawnableModels[e.Node.Index];
+                            selectedModel = DataStoreEngine.spawnableModels[e.Node.Index];
                         break;
                     case ModelType.Level:
-                        selectedModel = DataStore.levelModels[e.Node.Index];
+                        selectedModel = DataStoreEngine.levelModels[e.Node.Index];
                         break;
                     case ModelType.Scenery:
-                        selectedModel = DataStore.sceneryModels[e.Node.Index];
+                        selectedModel = DataStoreEngine.sceneryModels[e.Node.Index];
                         break;
                     case ModelType.Terrain:
-                        RatchetModel_Terrain terrModel = DataStore.terrainModel;
+                        RatchetModel_Terrain terrModel = DataStoreEngine.terrainModel;
                         modelDataList.Items.Clear();
                         modelDataList.Items.Add("RENDERING DISABLED");
                         modelDataList.Items.Add("Faces: " + terrModel.indiceBuff.Count.ToString("X"));
@@ -397,14 +398,14 @@ namespace RatchetLevelEditor
                 {
                     if(modelsListTree.SelectedNode.Parent.Index == 0)       //Level model
                     {
-                        RatchetModel_General selectedModel = DataStore.spawnableModels[modelsListTree.SelectedNode.Index];
+                        RatchetModel_General selectedModel = DataStoreEngine.spawnableModels[modelsListTree.SelectedNode.Index];
                         SpawnableToObj(ref selectedModel, OBJfilename, MTLfilename);
                         Console.WriteLine("OBJ file created: " + OBJfilename);
                         Console.WriteLine("MTL file created: " + MTLfilename);
                     }
                     else if (modelsListTree.SelectedNode.Parent.Index == 3)    //Terrain
                     {
-                        RatchetModel_Terrain model = DataStore.terrainModel;
+                        RatchetModel_Terrain model = DataStoreEngine.terrainModel;
                         terrainMeshToObj(ref model, OBJfilename, MTLfilename);
                         Console.WriteLine("OBJ file created: " + OBJfilename);
                         Console.WriteLine("MTL file created: " + MTLfilename);

@@ -14,6 +14,8 @@ using static TextureParser;
 using System.Drawing.Imaging;
 using System.IO;
 using static RatchetTexture;
+using RatchetLevelEditor.Engine;
+using RatchetLevelEditor.Gameplay;
 
 namespace RatchetLevelEditor
 {
@@ -167,7 +169,7 @@ namespace RatchetLevelEditor
             GL.GenBuffers(1, out indexBufferID);
 
 
-            selectedModel = DataStore.terrainModel;
+            selectedModel = DataStoreEngine.terrainModel;
             if (selectedModel.vertBuff != null) //Check that there's actually vertex data to be rendered
             {
                 int vertCnt = selectedModel.vertBuff.Count;
@@ -254,7 +256,7 @@ namespace RatchetLevelEditor
             if (splineCheck.Checked)
             {
                 GL.UniformMatrix4(MatrixID, false, ref worldView);
-                foreach (Spline spline in DataStore.splines)
+                foreach (Spline spline in DataStoreGameplay.splines)
                 {
                     spline.getVBO();
                     GL.DrawArrays(PrimitiveType.LineStrip, 0, spline.vertexBuffer.Length / 3);
@@ -266,9 +268,9 @@ namespace RatchetLevelEditor
 
             if (modReady && mobyCheck.Checked == true)
             {
-                foreach (RatchetMoby mob in DataStore.mobs)
+                foreach (RatchetMoby mob in DataStoreGameplay.mobs)
                 {
-                    objModel = DataStore.spawnableModels.Find(x => x.modelID == mob.modelID);
+                    objModel = DataStoreEngine.spawnableModels.Find(x => x.modelID == mob.modelID);
                     int insx = mobList.IndexOf((uint)objModel.modelID);
                     if (insx != -1)
                     {
@@ -296,7 +298,7 @@ namespace RatchetLevelEditor
                             int indx = modTexList.IndexOf(tex.ID);
                             GL.BindTexture(TextureTarget.Texture2D, mobTexIDArr[indx]);
 
-                            if (DataStore.selectedMoby == mob)
+                            if (DataStoreGlobal.selectedMoby == mob)
                             {
                                 GL.Uniform4(pgmID_rcID, new Vector4(1, 1, 1, 1));
                                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
@@ -312,9 +314,9 @@ namespace RatchetLevelEditor
             }
             if (levelReady && levelCheck.Checked == true)
             {
-                foreach (LevelObject levObj in DataStore.levelObjects)
+                foreach (LevelObject levObj in DataStoreEngine.levelObjects)
                 {
-                    objModel = DataStore.levelModels.Find(x => x.modelID == levObj.modelID);
+                    objModel = DataStoreEngine.levelModels.Find(x => x.modelID == levObj.modelID);
                     int insx = levelList.IndexOf((uint)objModel.modelID);
                     if (insx != -1)
                     {
@@ -336,7 +338,7 @@ namespace RatchetLevelEditor
                             int indx = levelTexList.IndexOf(tex.ID);
                             GL.BindTexture(TextureTarget.Texture2D, levelbTexIDArr[indx]);
 
-                            if (DataStore.selectedLevelObject == levObj)
+                            if (DataStoreGlobal.selectedLevelObject == levObj)
                             {
 
                                 GL.Uniform4(pgmID_rcID, new Vector4(1, 1, 1, 1));
@@ -355,9 +357,9 @@ namespace RatchetLevelEditor
 
             if (sceneryReady && sceneryCheck.Checked == true)
             {
-                foreach (LevelObject sceneryObj in DataStore.sceneryObjects)
+                foreach (LevelObject sceneryObj in DataStoreEngine.sceneryObjects)
                 {
-                    objModel = DataStore.sceneryModels.Find(x => x.modelID == sceneryObj.modelID);
+                    objModel = DataStoreEngine.sceneryModels.Find(x => x.modelID == sceneryObj.modelID);
 
                     int insx = sceneryList.IndexOf((uint)objModel.modelID);
                     if (insx != -1)
@@ -405,11 +407,11 @@ namespace RatchetLevelEditor
                 GL.UniformMatrix4(MatrixID, false, ref mvp);
                 GL.Uniform4(pgmID_rcID, new Vector4(1, 1, 1, 1));
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-                GL.DrawElements(PrimitiveType.Triangles, DataStore.collIndBuff.Count, DrawElementsType.UnsignedInt, 0);
+                GL.DrawElements(PrimitiveType.Triangles, DataStoreEngine.collIndBuff.Count, DrawElementsType.UnsignedInt, 0);
 
                 GL.UseProgram(colorOnlyShaderID);
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-                GL.DrawElements(PrimitiveType.Triangles, DataStore.collIndBuff.Count, DrawElementsType.UnsignedInt, 0);
+                GL.DrawElements(PrimitiveType.Triangles, DataStoreEngine.collIndBuff.Count, DrawElementsType.UnsignedInt, 0);
             }
 
             if (ready && terrainCheck.Checked)
@@ -456,9 +458,9 @@ namespace RatchetLevelEditor
 
             if (chunksReady && chunkCheck.Checked)
             {
-                for (int i = 0; i < DataStore.chunks.Count; i++)
+                for (int i = 0; i < DataStoreEngine.chunks.Count; i++)
                 {
-                    RatchetModel_Terrain chunk = DataStore.chunks[i];
+                    RatchetModel_Terrain chunk = DataStoreEngine.chunks[i];
 
                     GL.UseProgram(pgmID);
                     mvp = worldView;
@@ -513,12 +515,12 @@ namespace RatchetLevelEditor
             mobList = new List<uint>();
             modTexList = new List<uint>();
 
-            foreach (RatchetMoby mob in DataStore.mobs)
+            foreach (RatchetMoby mob in DataStoreGameplay.mobs)
             {
 
                 if (!mobList.Contains(mob.modelID))
                 {
-                    objModel = DataStore.spawnableModels.Find(x => x.modelID == mob.modelID);
+                    objModel = DataStoreEngine.spawnableModels.Find(x => x.modelID == mob.modelID);
                     if (objModel.vertBuff != null)
                     {
                         mobList.Add(mob.modelID);
@@ -534,7 +536,7 @@ namespace RatchetLevelEditor
 
             for (int i = 0; i < mobList.Count(); i++)
             {
-                objModel = DataStore.spawnableModels.Find(x => x.modelID == mobList[i]);
+                objModel = DataStoreEngine.spawnableModels.Find(x => x.modelID == mobList[i]);
                 if (objModel.vertBuff != null)
                 {
                     int vertCnt = objModel.vertBuff.Count;
@@ -596,11 +598,11 @@ namespace RatchetLevelEditor
             levelList = new List<uint>();
             levelTexList = new List<uint>();
 
-            foreach (LevelObject levObj in DataStore.levelObjects)
+            foreach (LevelObject levObj in DataStoreEngine.levelObjects)
             {
                 if (!levelList.Contains(levObj.modelID))
                 {
-                    objModel = DataStore.levelModels.Find(x => x.modelID == levObj.modelID);
+                    objModel = DataStoreEngine.levelModels.Find(x => x.modelID == levObj.modelID);
                     if (objModel.vertBuff != null)
                     {
                         levelList.Add(levObj.modelID);
@@ -616,7 +618,7 @@ namespace RatchetLevelEditor
 
             for (int i = 0; i < levelList.Count(); i++)
             {
-                objModel = DataStore.levelModels.Find(x => x.modelID == levelList[i]);
+                objModel = DataStoreEngine.levelModels.Find(x => x.modelID == levelList[i]);
                 if (objModel.vertBuff != null)
                 {
                     int vertCnt = objModel.vertBuff.Count;
@@ -667,12 +669,12 @@ namespace RatchetLevelEditor
         {
             sceneryList = new List<uint>();
             sceneryTexList = new List<uint>();
-            foreach (LevelObject levObj in DataStore.sceneryObjects)
+            foreach (LevelObject levObj in DataStoreEngine.sceneryObjects)
             {
                 if (!sceneryList.Contains(levObj.modelID))
                 {
 
-                    objModel = DataStore.sceneryModels.Find(x => x.modelID == levObj.modelID);
+                    objModel = DataStoreEngine.sceneryModels.Find(x => x.modelID == levObj.modelID);
 
                     if (objModel.vertBuff != null)
                     {
@@ -689,7 +691,7 @@ namespace RatchetLevelEditor
 
             for (int i = 0; i < sceneryList.Count(); i++)
             {
-                objModel = DataStore.sceneryModels.Find(x => x.modelID == sceneryList[i]);
+                objModel = DataStoreEngine.sceneryModels.Find(x => x.modelID == sceneryList[i]);
                 if (objModel.vertBuff != null)
                 {
 
@@ -904,13 +906,13 @@ namespace RatchetLevelEditor
                 if (modReady && mobyCheck.Checked)
                 {
                     GL.ClearColor(0, 0, 0, 0);
-                    foreach (RatchetMoby mob in DataStore.mobs)
+                    foreach (RatchetMoby mob in DataStoreGameplay.mobs)
                     {
-                        objModel = DataStore.spawnableModels.Find(x => x.modelID == mob.modelID);
+                        objModel = DataStoreEngine.spawnableModels.Find(x => x.modelID == mob.modelID);
                         int insx = mobList.IndexOf((uint)objModel.modelID);
                         if (insx != -1)
                         {
-                            int mobNum = DataStore.mobs.IndexOf(mob);
+                            int mobNum = DataStoreGameplay.mobs.IndexOf(mob);
                             byte[] cols = BitConverter.GetBytes(mobNum);
                             Matrix4 modTrans = Matrix4.CreateTranslation(mob.x, mob.y, mob.z);
                             Matrix4 modScale = Matrix4.CreateScale(objModel.size * mob.size);
@@ -945,19 +947,19 @@ namespace RatchetLevelEditor
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (DataStore.collVertBuff != null) //Check that there's actually vertex data to be rendered
+            if (DataStoreEngine.collVertBuff != null) //Check that there's actually vertex data to be rendered
             {
 
                 GL.GenBuffers(1, out collVBO);
                 GL.GenBuffers(1, out collInd);
 
-                int vertCnt = DataStore.collVertBuff.Count;
-                float[] vertArr = DataStore.collVertBuff.ToArray();
+                int vertCnt = DataStoreEngine.collVertBuff.Count;
+                float[] vertArr = DataStoreEngine.collVertBuff.ToArray();
                 GL.BindBuffer(BufferTarget.ArrayBuffer, collVBO);
                 GL.BufferData(BufferTarget.ArrayBuffer, vertCnt * sizeof(float), vertArr, BufferUsageHint.StaticDraw);
 
-                indCnt = DataStore.collIndBuff.Count;
-                uint[] indArr = DataStore.collIndBuff.ToArray();
+                indCnt = DataStoreEngine.collIndBuff.Count;
+                uint[] indArr = DataStoreEngine.collIndBuff.ToArray();
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, collInd);
                 GL.BufferData(BufferTarget.ElementArrayBuffer, indCnt * sizeof(uint), indArr, BufferUsageHint.StaticDraw);
 
@@ -979,7 +981,7 @@ namespace RatchetLevelEditor
 
         private void button3_Click(object sender, EventArgs e)
         {
-            int chunkCount = DataStore.chunks.Count();
+            int chunkCount = DataStoreEngine.chunks.Count();
             chunkVerts = new int[chunkCount];
             chunkInds = new int[chunkCount];
 
@@ -990,7 +992,7 @@ namespace RatchetLevelEditor
             Console.WriteLine("Checking chunk");
             for (int i = 0; i < chunkCount; i++)
             {
-                RatchetModel_Terrain chunk = DataStore.chunks[i];
+                RatchetModel_Terrain chunk = DataStoreEngine.chunks[i];
                 if (chunk.vertBuff != null) //Check that there's actually vertex data to be rendered
                 {
                     int vertCnt = chunk.vertBuff.Count;

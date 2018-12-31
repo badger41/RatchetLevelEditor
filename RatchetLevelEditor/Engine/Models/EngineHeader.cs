@@ -30,7 +30,7 @@ class EngineHeader
     //(0x4C)Weapons pointer (rac1)
     //(0x50)Weapons count (rac1)
     public uint texturesPointer;
-    public uint UYATextureCount;
+    public uint textureCount;
     //(0x5C)Lighting pointer
     public uint lightingLevel;
     //(0x64)Lighting config
@@ -71,7 +71,7 @@ class EngineHeader
         sceneryObjectsCount = BAToUInt32(engineHeader, 0x38);
         terrainPointer = BAToUInt32(engineHeader, 0x3C);
         texturesPointer = BAToUInt32(engineHeader, 0x54);
-        UYATextureCount = BAToUInt32(engineHeader, 0x58);
+        textureCount = BAToUInt32(engineHeader, 0x58);
         lightingLevel = BAToUInt32(engineHeader, 0x60);
         textureConfigMenuCount = BAToUInt32(engineHeader, 0x6C);
     }

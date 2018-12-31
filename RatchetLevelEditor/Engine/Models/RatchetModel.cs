@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,6 +36,7 @@ public class RatchetModel
     public struct RatchetModel_Terrain
     {
         public uint offset;
+        public uint headCount;
         public uint vertexCount;
         public uint faceCount;
         public uint totalSize;
@@ -48,6 +50,12 @@ public class RatchetModel
         public string mtls;
         public List<float> vertBuff;
         public List<uint> indiceBuff;
+        public byte[] terrainBlock;
+        public byte[] unknownBlock1;
+        public byte[] unknownBlock2;
+        public byte[] unknownBlock3;
+        public byte[] vertexIndices;
+        public byte[] vertexColors; //DL
     }
 
     public struct RatchetModel_TerrainCollision
@@ -63,5 +71,6 @@ public class RatchetModel
         public ModelType modelType;
         public byte[] rawData;
     }
+
 
 }

@@ -25,6 +25,19 @@ using System.Threading.Tasks;
             array[line + i] = newData[i];
         }
     }
+
+    //writes the x bytes to a line of the specified (ie mapConfig) array
+    public static void writeBytes(byte[] array, int line, uint data, int size, int test)
+    {
+        Console.WriteLine(test);
+        // byte[] newData = UIntToByteArray(data);
+        byte[] newData = BitConverter.GetBytes(data);
+        Array.Reverse(newData);
+        for (int i = 0; i < size; i++)
+        {
+            array[line + i] = newData[i];
+        }
+    }
     public double Matrix3DDeterminant(
         double m00, double m01, double m02,
         double m10, double m11, double m12,

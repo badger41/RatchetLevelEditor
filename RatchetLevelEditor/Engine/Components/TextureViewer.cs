@@ -15,6 +15,7 @@ using static RatchetTexture;
 using static DataFunctions;
 using ImageMagick;
 using static TextureParser;
+using RatchetLevelEditor.Engine;
 
 namespace RatchetLevelEditor
 {
@@ -43,9 +44,9 @@ namespace RatchetLevelEditor
         public void updateTextureList()
         {
             textureList.Items.Clear();
-            texAmountLabel.Text = "Texture Count: " + DataStore.textures.Count();
+            texAmountLabel.Text = "Texture Count: " + DataStoreEngine.textures.Count();
             int index = 0;
-            foreach (RatchetTexture_General tex in DataStore.textures)
+            foreach (RatchetTexture_General tex in DataStoreEngine.textures)
                 textureList.Items.Add("tex_" + index++);
             updateTextureGrid();
         }
@@ -64,7 +65,7 @@ namespace RatchetLevelEditor
 
         private void textureList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            updateTextureImage(DataStore.textures[textureList.SelectedIndex]);
+            updateTextureImage(DataStoreEngine.textures[textureList.SelectedIndex]);
         }
 
         void CreateBitmap()
@@ -120,17 +121,17 @@ namespace RatchetLevelEditor
             virtualCache.Clear();
             int index = 0;
 
-            texListView.VirtualListSize = DataStore.textures.Count;
+            texListView.VirtualListSize = DataStoreEngine.textures.Count;
             //image4 = Microsoft.Xna.Framework.Graphics.Texture2D.FromFile()
 
-            for (int i = 0; i < DataStore.textures.Count; i++)
+            for (int i = 0; i < DataStoreEngine.textures.Count; i++)
             {
                 virtualCache.Add(new ListViewItem("tex_" + i, i));
             }
 
             ThreadStart tstart = new ThreadStart(delegate ()
             {
-                loadForGrid(null, -1, DataStore.textures.Count);
+                loadForGrid(null, -1, DataStoreEngine.textures.Count);
             });
             Thread thread = new Thread(tstart);
             thread.Start();
@@ -152,19 +153,19 @@ namespace RatchetLevelEditor
             {
                 for (int i = 0; i < test; i++)
                 {
-                    Image images = getTextureImage(DataStore.textures[i].ID);
+                    Image images = getTextureImage(DataStoreEngine.textures[i].ID);
                     this.Invoke(new MethodInvoker(delegate { loadForGrid(images, i, -1); }));
                 }
                 return;
             }
             texImages.Images.Add("tex_" + index, image);
-            if (index >= DataStore.textures.Count - 1)
+            if (index >= DataStoreEngine.textures.Count - 1)
                 texListView.Refresh();
         }
 
         private void texListView_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            if (DataStore.textures != null && e.ItemIndex >= 0 && e.ItemIndex < virtualCache.Count)
+            if (DataStoreEngine.textures != null && e.ItemIndex >= 0 && e.ItemIndex < virtualCache.Count)
             {
                 //A cache hit, so get the ListViewItem from the cache instead of making a new one.
                 e.Item = virtualCache[e.ItemIndex];
@@ -212,7 +213,7 @@ namespace RatchetLevelEditor
         private void exportAllFunction(object sender, EventArgs e)
         {
             exportSelIndex = int.Parse((string)((ToolStripMenuItem)sender).Tag);
-            exportAllFolderSelect.SelectedPath = DataStore.workingDirectory;
+            exportAllFolderSelect.SelectedPath = DataStoreGlobal.workingDirectory;
             if (exportAllFolderSelect.ShowDialog() == DialogResult.OK)
             {
                 // Configure a BackgroundWorker to perform your long running operation.
@@ -237,8 +238,8 @@ namespace RatchetLevelEditor
         {
             // The progress percentage is a property of e
             string[] extensions = new string[] { ".png", ".dxt5", ".dds" };
-            pBar.Value = (int)(((double)e.ProgressPercentage / (double)DataStore.textures.Count) * 100);
-            if (e.ProgressPercentage < DataStore.textures.Count - 1)
+            pBar.Value = (int)(((double)e.ProgressPercentage / (double)DataStoreEngine.textures.Count) * 100);
+            if (e.ProgressPercentage < DataStoreEngine.textures.Count - 1)
                 texName.Text = "Exporting... tex_" + e.ProgressPercentage + extensions[exportSelIndex];
             else
                 texName.Text = "Exporting... Done!";
@@ -261,29 +262,29 @@ namespace RatchetLevelEditor
             {
                 case 0: //PNG
                 default:
-                    for (int i = 0; i < DataStore.textures.Count; i++)
+                    for (int i = 0; i < DataStoreEngine.textures.Count; i++)
                     {
-                        getTextureImage(DataStore.textures[i].ID).Save(exportAllFolderSelect.SelectedPath + "/tex_" + i + ".png", ImageFormat.Png);
+                        getTextureImage(DataStoreEngine.textures[i].ID).Save(exportAllFolderSelect.SelectedPath + "/tex_" + i + ".png", ImageFormat.Png);
                         bg.ReportProgress(i);
                         if (bg.CancellationPending)
                             break;
                     }
                     break;
                 case 1: //DXT5
-                    for (int i = 0; i < DataStore.textures.Count; i++)
+                    for (int i = 0; i < DataStoreEngine.textures.Count; i++)
                     {
-                        File.WriteAllBytes(exportAllFolderSelect.SelectedPath + "/tex_" + i + ".dxt3", DataStore.textures[i].texData);
+                        File.WriteAllBytes(exportAllFolderSelect.SelectedPath + "/tex_" + i + ".dxt3", DataStoreEngine.textures[i].texData);
                         bg.ReportProgress(i);
                         if (bg.CancellationPending)
                             break;
                     }
                     break;
                 case 2: //DDS
-                    for (int i = 0; i < DataStore.textures.Count; i++)
+                    for (int i = 0; i < DataStoreEngine.textures.Count; i++)
                     {
-                        int width = DataStore.textures[i].width;
-                        int height = DataStore.textures[i].height;
-                        byte[] texData = DataStore.textures[i].texData;
+                        int width = DataStoreEngine.textures[i].width;
+                        int height = DataStoreEngine.textures[i].height;
+                        byte[] texData = DataStoreEngine.textures[i].texData;
                         IEnumerable<byte> ddsConcat = Constants.ddsHeader.Concat(texData);
                         byte[] ddsBuilt = ddsConcat.ToArray();
                         writeBytes(ddsBuilt, 0x0C, (uint)height << 16, 4);
@@ -307,7 +308,7 @@ namespace RatchetLevelEditor
             else
             {
                 // report end of processing
-                bg.ReportProgress(DataStore.textures.Count());
+                bg.ReportProgress(DataStoreEngine.textures.Count());
             }
         }
         private void exportall_completed_background(object sender, RunWorkerCompletedEventArgs e)
@@ -428,7 +429,7 @@ namespace RatchetLevelEditor
 
             RatchetTexture_General newTex = new RatchetTexture_General()
             {
-                ID = DataStore.textures.Count,
+                ID = DataStoreEngine.textures.Count,
                 height = height,
                 width = width,
                 texHeader = texDef,
@@ -436,7 +437,7 @@ namespace RatchetLevelEditor
                 reverseRGB = false
 
             };
-            DataStore.textures.Add(newTex);
+            DataStoreEngine.textures.Add(newTex);
             updateTextureList();
             //Inserts 4 lines of 0s which indicates start of new texture
            // Form1.vramData = insertNew(Form1.vramData, zeros, Form1.vramData.Length);

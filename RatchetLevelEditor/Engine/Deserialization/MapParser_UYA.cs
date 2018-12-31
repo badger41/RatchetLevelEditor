@@ -9,6 +9,8 @@ using static DataFunctions;
 using static RatchetModel;
 using static RatchetTexture;
 using static RatchetLevelEditor.GameplayParser;
+using RatchetLevelEditor.Engine;
+using RatchetLevelEditor.Gameplay;
 
 namespace RatchetLevelEditor
 {
@@ -47,12 +49,12 @@ namespace RatchetLevelEditor
             List<MobyPropertyVariableConfig> pVarConfigs = new List<MobyPropertyVariableConfig>();
             string jsonString = File.ReadAllText(String.Format("./Config/Rac{0}/MobyPropertyVariables.json", racNum));
             pVarConfigs = JsonConvert.DeserializeObject<List<MobyPropertyVariableConfig>>(jsonString);
-            DataStore.pVarMap = pVarConfigs;
+            DataStoreGlobal.pVarMap = pVarConfigs;
 
             #region GameplayHeader
             GameplayHeader gameplayHeader = new GameplayHeader(gpf, racNum);
 
-            DataStore.gameplayHeader = gameplayHeader;
+            DataStoreGameplay.gameplayHeader = gameplayHeader;
 
             #endregion
 
@@ -118,11 +120,10 @@ namespace RatchetLevelEditor
             gpf.Close();
             parseGameplay(path, (int) racNum);
 
-            EngineHeader engineHeader = new EngineHeader(fs, 1);
-            DataStore.engineHeader = engineHeader;
+            EngineHeader engineHeader = DataStoreEngine.engineHeader;
 
             //Load UYA Spawnable Models
-            #region Spawnables
+            /*#region Spawnables
             uint spawnablesCount = BAToUInt32(ReadBlock(fs, engineHeader.spawnablesPointer, 4), 0);
             byte[] idBlock = ReadBlock(fs, engineHeader.spawnablesPointer + 4, spawnablesCount * 8);
 
@@ -214,85 +215,85 @@ namespace RatchetLevelEditor
                     }
 
                 }
-                DataStore.spawnableModels.Add(model);
+                DataStoreEngine.spawnableModels.Add(model);
             }
-            #endregion
+            #endregion*/
 
             //Load UYA Level Models
-            #region Level Models
-            uint levelElemSize = 0x40;
-            byte[] levelBlock = ReadBlock(fs, engineHeader.levelModelsPointer, engineHeader.levelModelsCount * levelElemSize);
+            /* #region Level Models
+             uint levelElemSize = 0x40;
+             byte[] levelBlock = ReadBlock(fs, engineHeader.levelModelsPointer, engineHeader.levelModelsCount * levelElemSize);
 
-            for (uint x = 0; x < engineHeader.levelModelsCount; x++)
-            {
+             for (uint x = 0; x < engineHeader.levelModelsCount; x++)
+             {
 
-                RatchetModel_General model = new RatchetModel_General();
-                model.modelType = ModelType.Level;
-                model.size = 0.5f;
+                 RatchetModel_General model = new RatchetModel_General();
+                 model.modelType = ModelType.Level;
+                 model.size = 0.5f;
 
-                uint vertPointer =      BAToUInt32( levelBlock, (x * levelElemSize) + 0x10);
-                uint UVPointer =        BAToUInt32( levelBlock, (x * levelElemSize) + 0x14);
-                uint indicePointer =    BAToUInt32( levelBlock, (x * levelElemSize) + 0x18);
-                uint texPointer =       BAToUInt32( levelBlock, (x * levelElemSize) + 0x1C);
-                model.vertexCount =     (ushort)BAToUInt32( levelBlock, (x * levelElemSize) + 0x24);
-                ushort texCount =       BAToUInt16( levelBlock, (x * levelElemSize) + 0x28);
-                model.modelID =         BAToShort(  levelBlock, (x * levelElemSize) + 0x30);
+                 uint vertPointer =      BAToUInt32( levelBlock, (x * levelElemSize) + 0x10);
+                 uint UVPointer =        BAToUInt32( levelBlock, (x * levelElemSize) + 0x14);
+                 uint indicePointer =    BAToUInt32( levelBlock, (x * levelElemSize) + 0x18);
+                 uint texPointer =       BAToUInt32( levelBlock, (x * levelElemSize) + 0x1C);
+                 model.vertexCount =     (ushort)BAToUInt32( levelBlock, (x * levelElemSize) + 0x24);
+                 ushort texCount =       BAToUInt16( levelBlock, (x * levelElemSize) + 0x28);
+                 model.modelID =         BAToShort(  levelBlock, (x * levelElemSize) + 0x30);
 
-                model.offset = (uint)(x * 0x40) + engineHeader.levelModelsPointer;
-                model.modelType = ModelType.Level;
+                 model.offset = (uint)(x * 0x40) + engineHeader.levelModelsPointer;
+                 model.modelType = ModelType.Level;
 
-                uint texElemSize = 0x18;
-                byte[] texBlock = ReadBlock(fs, texPointer, texCount * texElemSize);
-                model.textureConfig = new List<RatchetTexture_Model>();
-                model.faceCount = 0;
-                for (uint t = 0; t < texCount; t++)
-                {
-                    RatchetTexture_Model dlt = new RatchetTexture_Model();
-                    dlt.ID =    BAToUInt32(texBlock, (t * texElemSize) + 0x00);
-                    dlt.start = BAToUInt32(texBlock, (t * texElemSize) + 0x08);
-                    dlt.size =  BAToUInt32(texBlock, (t * texElemSize) + 0x0C);
-                    model.textureConfig.Add(dlt);
-                    model.faceCount += dlt.size;
-                }
-                
-                //Flip endianness of vertex array float[vert_x, vert_y, vert_z, norm_x, norm_y, norm_z, uv_u, uv_v, reserved reserved]
-                uint vertElemSize = 0x18;
-                uint vertBuffSize = model.vertexCount * vertElemSize;
-                byte[] vertBlock = ReadBlock(fs, vertPointer, vertBuffSize);
+                 uint texElemSize = 0x18;
+                 byte[] texBlock = ReadBlock(fs, texPointer, texCount * texElemSize);
+                 model.textureConfig = new List<RatchetTexture_Model>();
+                 model.faceCount = 0;
+                 for (uint t = 0; t < texCount; t++)
+                 {
+                     RatchetTexture_Model dlt = new RatchetTexture_Model();
+                     dlt.ID =    BAToUInt32(texBlock, (t * texElemSize) + 0x00);
+                     dlt.start = BAToUInt32(texBlock, (t * texElemSize) + 0x08);
+                     dlt.size =  BAToUInt32(texBlock, (t * texElemSize) + 0x0C);
+                     model.textureConfig.Add(dlt);
+                     model.faceCount += dlt.size;
+                 }
 
-                uint UVElemsize = 0x08;
-                uint UVBuffSize = model.vertexCount * UVElemsize;
-                byte[] UVBlock = ReadBlock(fs, UVPointer, UVBuffSize);
+                 //Flip endianness of vertex array float[vert_x, vert_y, vert_z, norm_x, norm_y, norm_z, uv_u, uv_v, reserved reserved]
+                 uint vertElemSize = 0x18;
+                 uint vertBuffSize = model.vertexCount * vertElemSize;
+                 byte[] vertBlock = ReadBlock(fs, vertPointer, vertBuffSize);
+
+                 uint UVElemsize = 0x08;
+                 uint UVBuffSize = model.vertexCount * UVElemsize;
+                 byte[] UVBlock = ReadBlock(fs, UVPointer, UVBuffSize);
 
 
-                model.vertBuff = new List<float>();
-                for (uint i = 0; i < model.vertexCount; i++)
-                {
-                    model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x00));    //vertx
-                    model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x04));    //verty
-                    model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x08));    //vertz
-                    model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x0C));    //normx
-                    model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x10));    //normy
-                    model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x14));    //normz
+                 model.vertBuff = new List<float>();
+                 for (uint i = 0; i < model.vertexCount; i++)
+                 {
+                     model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x00));    //vertx
+                     model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x04));    //verty
+                     model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x08));    //vertz
+                     model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x0C));    //normx
+                     model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x10));    //normy
+                     model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x14));    //normz
 
-                    model.vertBuff.Add(BAToFloat(UVBlock, (i * UVElemsize) + 0x00));    //UVu
-                    model.vertBuff.Add(BAToFloat(UVBlock, (i * UVElemsize) + 0x04));    //UVv
-                }
+                     model.vertBuff.Add(BAToFloat(UVBlock, (i * UVElemsize) + 0x00));    //UVu
+                     model.vertBuff.Add(BAToFloat(UVBlock, (i * UVElemsize) + 0x04));    //UVv
+                 }
 
-                //Flip endianness of index array
-                byte[] indiceBuff = ReadBlock(fs, indicePointer, model.faceCount * sizeof(ushort));
-                model.indiceBuff = new List<ushort>();
-                for (uint i = 0; i < model.faceCount; i++)
-                {
-                    model.indiceBuff.Add(BAToUInt16(indiceBuff, i * sizeof(ushort)));
-                }
+                 //Flip endianness of index array
+                 byte[] indiceBuff = ReadBlock(fs, indicePointer, model.faceCount * sizeof(ushort));
+                 model.indiceBuff = new List<ushort>();
+                 for (uint i = 0; i < model.faceCount; i++)
+                 {
+                     model.indiceBuff.Add(BAToUInt16(indiceBuff, i * sizeof(ushort)));
+                 }
 
-                DataStore.levelModels.Add(model);
-            }
-            #endregion
+                 DataStoreEngine.levelModels.Add(model);
+             }
+             #endregion*/
 
             //Load UYA Scenery Models
-            #region Scenery Models
+            /*#region Scenery Models
             uint sceneElemSize = 0x40;
             byte[] sceneBlock = ReadBlock(fs, engineHeader.sceneryModelsPointer, engineHeader.sceneryModelsCount * sceneElemSize);
 
@@ -356,13 +357,13 @@ namespace RatchetLevelEditor
                     model.indiceBuff.Add(BAToUInt16(indiceBuff, i * sizeof(ushort)));
                 }
 
-                DataStore.sceneryModels.Add(model);
+                DataStoreEngine.sceneryModels.Add(model);
                 //Console.WriteLine("Scenery Model Added: 0x" + model.modelID.ToString("X4"));
             }
-            #endregion
+            #endregion*/
 
             //Load Terrain
-            #region Terrain
+            /*#region Terrain
             {
                 uint terrainElemSize = 0x30;
                 uint texElemSize = 0x10;
@@ -456,40 +457,40 @@ namespace RatchetLevelEditor
                 }
                 model.vertexCount = vertCount;
                 model.faceCount = prevFaceCount;
-                DataStore.terrainModel = model;
+                DataStoreEngine.terrainModel = model;
             }
-            #endregion
+            #endregion*/
 
             //Load Level Objects
-            #region Level objects
+            /*#region Level objects
             byte[] levelObjectBlock = ReadBlock(fs, engineHeader.levelObjectPointer, engineHeader.levelObjectCount * 0x70);
-            DataStore.levelObjects = new List<LevelObject>();
+            DataStoreEngine.levelObjects = new List<LevelObject>();
             for(uint i = 0; i < engineHeader.levelObjectCount; i++)
             {
                 LevelObject levObj = new LevelObject(levelObjectBlock, i);
-                DataStore.levelObjects.Add(levObj);
+                DataStoreEngine.levelObjects.Add(levObj);
             }
-            #endregion
+            #endregion*/
 
             //Load Scenery Objects
-            #region Scenery objects
+            /*#region Scenery objects
             byte[] sceneryObjectBlock = ReadBlock(fs, engineHeader.sceneryObjectsPointer, engineHeader.sceneryObjectsCount * 0x70);
-            DataStore.sceneryObjects = new List<LevelObject>();
+            DataStoreEngine.sceneryObjects = new List<LevelObject>();
             for (uint i = 0; i < engineHeader.sceneryObjectsCount; i++)
             {
-                LevelObject levObj = new LevelObject(sceneryObjectBlock, i);
-                DataStore.sceneryObjects.Add(levObj);
+                //LevelObject levObj = new LevelObject(sceneryObjectBlock, i);
+                //DataStoreEngine.sceneryObjects.Add(levObj);
             }
-            #endregion
+            #endregion*/
 
             //Load Textures
-            #region Textures
+            /*#region Textures
             RatchetTexture_General texture = new RatchetTexture_General();
-            for (int x = 0; x < engineHeader.UYATextureCount; x++)
+            for (int x = 0; x < engineHeader.textureCount; x++)
             {
 
                 texture.texHeader = ReadBlock(fs, engineHeader.texturesPointer + (uint)(0x24 * x), 0x24);
-                uint nextTexturePointer = x < engineHeader.UYATextureCount -1 ? ReadUInt32(ReadBlock(fs, engineHeader.texturesPointer + (uint)(0x24 * (x + 1)), 0x4), 0) : vfs != null ? (uint)vfs.Length : 0;
+                uint nextTexturePointer = x < engineHeader.textureCount -1 ? ReadUInt32(ReadBlock(fs, engineHeader.texturesPointer + (uint)(0x24 * (x + 1)), 0x4), 0) : vfs != null ? (uint)vfs.Length : 0;
                 uint currentTexturePointer =  ReadUInt32(texture.texHeader, 0);
                 //Console.WriteLine("Parsing texture " + x + " " + currentTexturePointer.ToString("X") + " " + nextTexturePointer.ToString("X"));
                 texture.ID = x;
@@ -497,15 +498,15 @@ namespace RatchetLevelEditor
                 texture.height = BAToShort(texture.texHeader, 0x1A);
                 texture.texData = vfs != null ? ReadBlock(vfs, currentTexturePointer, nextTexturePointer - currentTexturePointer) : null;
                 texture.reverseRGB = false;
-                DataStore.textures.Add(texture);
+                DataStoreEngine.textures.Add(texture);
                 //Console.WriteLine("Texture : " + x + " Width: " + texture.width + " Height: " + texture.height);
             }
-            #endregion
+            #endregion*/
 
 
 
             //Terrain Collision
-            #region Terrain Collision
+            /*#region Terrain Collision
             float div = 1024f;
 
             uint collisionVertCount = 0;
@@ -660,9 +661,9 @@ namespace RatchetLevelEditor
                     }
                 }
             }
-            DataStore.collVertBuff = collisionVertexBuff;
-            DataStore.collIndBuff = collisionIndiceBuff;
-            #endregion
+            DataStoreEngine.collVertBuff = collisionVertexBuff;
+            DataStoreEngine.collIndBuff = collisionIndiceBuff;
+            #endregion*/
 
             #region Chunks
             List<int> chunkIds = new List<int>();
@@ -783,7 +784,7 @@ namespace RatchetLevelEditor
                 }
                 model.vertexCount = vertCount;
                 model.faceCount = prevFaceCount;
-                DataStore.chunks.Add(model);
+                DataStoreEngine.chunks.Add(model);
             }
             #endregion
 

@@ -12,6 +12,8 @@ using static DataFunctions;
 using RatchetLevelEditor.MobyPVarUserControls;
 
 using static RatchetLevelEditor.GameplaySerializer;
+using RatchetLevelEditor.Gameplay;
+using RatchetLevelEditor.Engine;
 
 namespace RatchetLevelEditor
 {
@@ -37,26 +39,26 @@ namespace RatchetLevelEditor
 
         private void Object_viewer_Load(object sender, EventArgs e)
         {
-            foreach(RatchetMoby mob in DataStore.mobs)
+            foreach(RatchetMoby mob in DataStoreGameplay.mobs)
             {
                 string modelName = Main.modelNames != null ? Main.modelNames.Find(x => x.Substring(0, 4).ToUpper() == mob.modelID.ToString("X4")) : null;
-                listBox1.Items.Add(DataStore.mobs.IndexOf(mob).ToString("X4") + ": " + (modelName != null ? modelName.Split('=')[1].Substring(1) : mob.modelID.ToString("X")));
+                listBox1.Items.Add(DataStoreGameplay.mobs.IndexOf(mob).ToString("X4") + ": " + (modelName != null ? modelName.Split('=')[1].Substring(1) : mob.modelID.ToString("X")));
             }
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            selectedMoby = DataStore.mobs[listBox1.SelectedIndex];
-            DataStore.selectedMoby = selectedMoby;
+            selectedMoby = DataStoreGameplay.mobs[listBox1.SelectedIndex];
+            DataStoreGlobal.selectedMoby = selectedMoby;
             updateVals();
 
             missionBox.Text = selectedMoby.missionID.ToString("X8");
             if(mainForm.modelViewer.Visible)
             {
-                mainForm.modelViewer.selectedModel = DataStore.spawnableModels.Find(x => x.modelID == selectedMoby.modelID);
+                mainForm.modelViewer.selectedModel = DataStoreEngine.spawnableModels.Find(x => x.modelID == selectedMoby.modelID);
                 mainForm.modelViewer.inval();
             }
-            DataStore.selectedMoby = selectedMoby;
+            DataStoreGlobal.selectedMoby = selectedMoby;
             mainForm.terrainViewer.updateView();
         }
 
@@ -168,16 +170,16 @@ namespace RatchetLevelEditor
 
         private void button1_Click(object sender, EventArgs e)
         {
-            int mobElemSize = (int)DataStore.gameplayHeader.mobyElemSize;
-            int mobCount = DataStore.mobs.Count();
+            int mobElemSize = (int)DataStoreGameplay.gameplayHeader.mobyElemSize;
+            int mobCount = DataStoreGameplay.mobs.Count();
             byte[] test = new byte[mobCount * mobElemSize];
 
-            switch (DataStore.gameplayHeader.gameNum)
+            switch (DataStoreGameplay.gameplayHeader.gameNum)
             {
                 case 1:
                     for (int i = 0; i < mobCount; i++)
                     {
-                        RatchetMoby mob = DataStore.mobs[i];
+                        RatchetMoby mob = DataStoreGameplay.mobs[i];
                         WriteUint32(ref test, (i * mobElemSize) + 0x00, mob.length);
                         WriteUint32(ref test, (i * mobElemSize) + 0x04, mob.missionID);
                         WriteUint32(ref test, (i * mobElemSize) + 0x08, mob.unk1);
@@ -222,7 +224,7 @@ namespace RatchetLevelEditor
                 case 3:
                     for (int i = 0; i < mobCount; i++)
                     {
-                        RatchetMoby mob = DataStore.mobs[i];
+                        RatchetMoby mob = DataStoreGameplay.mobs[i];
                         WriteUint32(ref test, (i * mobElemSize) + 0x00, mob.length);
                         WriteUint32(ref test, (i * mobElemSize) + 0x04, mob.missionID);
                         WriteUint32(ref test, (i * mobElemSize) + 0x08, mob.unk1);
@@ -271,7 +273,7 @@ namespace RatchetLevelEditor
                 case 4:
                     for (int i = 0; i < mobCount; i++)
                     {
-                        RatchetMoby mob = DataStore.mobs[i];
+                        RatchetMoby mob = DataStoreGameplay.mobs[i];
                         WriteUint32(ref test, (i * mobElemSize) + 0x00, mob.length);
                         WriteUint32(ref test, (i * mobElemSize) + 0x04, mob.missionID);
                         WriteUint32(ref test, (i * mobElemSize) + 0x08, mob.dataval);
@@ -310,11 +312,11 @@ namespace RatchetLevelEditor
                     break;
             }
 
-            serialize(DataStore.workingDirectory, (int) DataStore.gameplayHeader.gameNum);
+            serialize(DataStoreGlobal.workingDirectory, (int) DataStoreGameplay.gameplayHeader.gameNum);
             /*FileStream gameplayFile = null;
-            gameplayFile = File.OpenWrite(DataStore.workingDirectory + "/gameplay_ntsc");
-            Console.WriteLine((DataStore.gameplayHeader.mobyPointer + 0x10).ToString("X8"));
-            gameplayFile.Seek(DataStore.gameplayHeader.mobyPointer + 0x10, SeekOrigin.Begin);
+            gameplayFile = File.OpenWrite(DataStoreGameplay.workingDirectory + "/gameplay_ntsc");
+            Console.WriteLine((DataStoreGameplay.gameplayHeader.mobyPointer + 0x10).ToString("X8"));
+            gameplayFile.Seek(DataStoreGameplay.gameplayHeader.mobyPointer + 0x10, SeekOrigin.Begin);
             gameplayFile.Write(test, 0, mobCount * mobElemSize);
             gameplayFile.Close();
             Console.WriteLine("File written successfully, enjoy :)");*/

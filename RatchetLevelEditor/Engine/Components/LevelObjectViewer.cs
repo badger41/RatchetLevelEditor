@@ -11,6 +11,7 @@ using OpenTK;
 using static RatchetModel;
 using static DataFunctions;
 using System.IO;
+using RatchetLevelEditor.Engine;
 
 namespace RatchetLevelEditor
 {
@@ -30,23 +31,23 @@ namespace RatchetLevelEditor
 
         private void LevelObjectViewer_Load(object sender, EventArgs e)
         {
-            foreach(LevelObject levelObj in DataStore.levelObjects)
+            foreach(LevelObject levelObj in DataStoreEngine.levelObjects)
             {
                 levelObjList.Items.Add(levelObj.modelID.ToString("X"));
             }
             mods = new List<int>();
-            for (int i = 0; i < DataStore.levelModels.Count(); i++)
+            for (int i = 0; i < DataStoreEngine.levelModels.Count(); i++)
             {
-                comboBox1.Items.Add(DataStore.levelModels[i].modelID.ToString("X"));
-                mods.Add(DataStore.levelModels[i].modelID);
+                comboBox1.Items.Add(DataStoreEngine.levelModels[i].modelID.ToString("X"));
+                mods.Add(DataStoreEngine.levelModels[i].modelID);
             }
         }
 
         private void levelObjList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            selectedLevelObj = DataStore.levelObjects[levelObjList.SelectedIndex];
-            DataStore.selectedLevelObject = selectedLevelObj;
-            DataStore.selectedMoby = null;
+            selectedLevelObj = DataStoreEngine.levelObjects[levelObjList.SelectedIndex];
+            DataStoreGlobal.selectedLevelObject = selectedLevelObj;
+            DataStoreGlobal.selectedMoby = null;
             updateValues();
 
         }
@@ -62,7 +63,7 @@ namespace RatchetLevelEditor
             objProperties.Items.Add(selectedLevelObj.off_58.ToString("X8"));
             objProperties.Items.Add(selectedLevelObj.off_5C.ToString("X8"));
 
-            objProperties.Items.Add(selectedLevelObj.off_60.ToString("X8"));
+            objProperties.Items.Add(selectedLevelObj.vertexColorsPtr.ToString("X8"));
             objProperties.Items.Add(selectedLevelObj.off_64.ToString("X8"));
             objProperties.Items.Add(selectedLevelObj.off_68.ToString("X8"));
             objProperties.Items.Add(selectedLevelObj.off_6C.ToString("X8"));
@@ -114,12 +115,12 @@ namespace RatchetLevelEditor
         private void button1_Click(object sender, EventArgs e)
         {
 
-            int objCount = DataStore.levelObjects.Count();
+            int objCount = DataStoreEngine.levelObjects.Count();
             byte[] test = new byte[objCount * 0x70];
 
             for(int i = 0; i < objCount; i++)
             {
-                LevelObject levObj = DataStore.levelObjects[i];
+                LevelObject levObj = DataStoreEngine.levelObjects[i];
                 WriteFloat(ref test, (i * 0x70) + 0x00, levObj.mat.M11);
                 WriteFloat(ref test, (i * 0x70) + 0x04, levObj.mat.M12);
                 WriteFloat(ref test, (i * 0x70) + 0x08, levObj.mat.M13);
@@ -146,7 +147,7 @@ namespace RatchetLevelEditor
                 WriteUint32(ref test, (i * 0x70) + 0x58, levObj.off_58);
                 WriteUint32(ref test, (i * 0x70) + 0x5C, levObj.off_5C);
 
-                WriteUint32(ref test, (i * 0x70) + 0x60, levObj.off_60);
+                WriteUint32(ref test, (i * 0x70) + 0x60, levObj.vertexColorsPtr);
                 WriteUint32(ref test, (i * 0x70) + 0x64, levObj.off_64);
                 WriteUint32(ref test, (i * 0x70) + 0x68, levObj.off_68);
                 WriteUint32(ref test, (i * 0x70) + 0x6C, levObj.off_6C);
@@ -154,8 +155,8 @@ namespace RatchetLevelEditor
 
 
             FileStream vfs = null;
-            vfs = File.OpenWrite(DataStore.workingDirectory + "/engine.ps3");
-            vfs.Seek(DataStore.engineHeader.levelObjectPointer, SeekOrigin.Begin);
+            vfs = File.OpenWrite(DataStoreGlobal.workingDirectory + "/engine.ps3");
+            vfs.Seek(DataStoreEngine.engineHeader.levelObjectPointer, SeekOrigin.Begin);
             vfs.Write(test, 0, objCount * 0x70);
             vfs.Close();
             Console.WriteLine("File written successfully, enjoy :)");

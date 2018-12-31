@@ -158,4 +158,68 @@ class ModelParser
         OBJfs.Close();
 
     }
+
+    //Returns the raw bytes for a model in the engine file
+    public static byte[] getModelDataRaw(ModelType modelType, FileStream fs, int modelID)
+    {
+        byte[] data = null;
+
+        byte[] engineHeader = ReadBlock(fs, 0, 0x80);
+
+        uint modelPtr = BAToUInt32(engineHeader, 0);
+        uint levelPtr = BAToUInt32(engineHeader, 0x1C);
+        uint scenePtr = BAToUInt32(engineHeader, 0x2c);
+        uint terraPtr = BAToUInt32(engineHeader, 0x3c);
+
+        switch (modelType)
+        {
+            case ModelType.Spawnable:
+                uint modelPtrSize = BAToUInt32(ReadBlock(fs, modelPtr, 4), 0);
+                uint pointerStart = 0;
+                uint pointerEnd = 0;
+                byte[] idBlock = ReadBlock(fs, modelPtr + 4, modelPtrSize * 8);
+                for (int i = 0; i < modelPtrSize; i++)
+                {
+                    //check if the model in the list is equal to what we called for
+                    if (BAToShort(idBlock, (uint)i * 8 + 2) == modelID)
+                    {
+                        //pointer of our start model
+                        pointerStart = BAToUInt32(idBlock, (uint)(i * 8) + 4);
+                        //models with 0 as the pointer have no data
+                        if (pointerStart == 0x00000000)
+                        {
+                            return new byte[0];
+                        }
+                        if (i + 1 < modelPtrSize)
+                        {
+
+                            //loops to the end of the list starting from our start pointer to find next model offset thats not 0
+                            for (int x = 1; x < modelPtrSize - i; x++)
+                            {
+                                uint slot = BAToUInt32(idBlock, (uint)((i + x) * 8) + 4);
+                                if (slot != 0x00000000)
+                                {
+                                    pointerEnd = slot;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            pointerEnd = FindNextLargest(engineHeader, 0);
+                        }
+                        data = ReadBlock(fs, pointerStart, pointerEnd - pointerStart);
+                        break;
+                    }
+                }
+                break;
+            case ModelType.Level:
+                //TODO
+                break;
+            case ModelType.Scenery:
+                //TODO
+                break;
+        }
+        return data;
+    }
 }

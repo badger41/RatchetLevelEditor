@@ -116,7 +116,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Engine\DataStoreEngine.cs" />
+    <Compile Include="Engine\Deserialization\EngineDeserializer.cs" />
     <Compile Include="Engine\Models\EngineHeader.cs" />
+    <Compile Include="Engine\Models\ShrubModel.cs" />
+    <Compile Include="Engine\Models\TieModel.cs" />
+    <Compile Include="Engine\Serialization\EngineSerializer.cs" />
+    <Compile Include="Gameplay\DataStoreGameplay.cs" />
     <Compile Include="Gameplay\Models\GameplayHeader.cs" />
     <Compile Include="Gameplay\Deserialization\GameplayParser.cs" />
     <Compile Include="Gameplay\Serialization\GameplaySerializer.cs" />
@@ -139,7 +145,7 @@
     </Compile>
     <Compile Include="Main\Constants.cs" />
     <Compile Include="Utils\DataFunctions.cs" />
-    <Compile Include="DataStore.cs" />
+    <Compile Include="DataStoreGlobal.cs" />
     <Compile Include="Engine\Deserialization\MapParser_UYA.cs" />
     <Compile Include="Main\Components\MapOpen.cs">
       <SubType>Form</SubType>
@@ -265,16 +271,16 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="Resources\Shaders\fs_colored.glsl">
+    <None Include="Shaders\fs_colored.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\Shaders\fs_color_only.glsl">
+    <None Include="Shaders\fs_color_only.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\Shaders\vs_colored.glsl">
+    <None Include="Shaders\vs_colored.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\Shaders\vs_color_only.glsl">
+    <None Include="Shaders\vs_color_only.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -282,11 +288,12 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Engine\Models\UnknownData.cs" />
     <Content Include="Resources\load.gif" />
-    <None Include="Resources\Shaders\fs.glsl">
+    <None Include="Shaders\fs.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Resources\Shaders\vs.glsl">
+    <None Include="Shaders\vs.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -303,7 +310,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Engine\Serialization\" />
     <Folder Include="Gadgets\Serialization\" />
     <Folder Include="Missions\Serialization\" />
     <Folder Include="Mobyload\Serialization\" />

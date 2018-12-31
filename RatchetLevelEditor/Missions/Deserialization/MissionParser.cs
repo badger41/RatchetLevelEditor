@@ -155,7 +155,7 @@ namespace RatchetLevelEditor
                     mission.textures.Add(texture);
                 }
                 #endregion
-                DataStore.missions.Add(mission);
+                DataStoreGlobal.missions.Add(mission);
                 fs.Close();
             }
         }

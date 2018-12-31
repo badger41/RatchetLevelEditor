@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static DataFunctions;
 using OpenTK.Graphics.OpenGL;
+using RatchetLevelEditor.Gameplay;
 
 namespace RatchetLevelEditor
 {
@@ -50,22 +51,22 @@ namespace RatchetLevelEditor
 
             //This pointer comes right after the spline count, it tells the game where to start reading the actual spline data
             uint pointerToSplineData = 0;
-            int expectedMasterHeaderSize = 0x10 + (DataStore.splines.Count * 0x04);
+            int expectedMasterHeaderSize = 0x10 + (DataStoreGameplay.splines.Count * 0x04);
 
             //We have to do this to ensure our pointers end in a 0, if not, the game will crash
             while (expectedMasterHeaderSize % 10 != 0)
                 expectedMasterHeaderSize += 0x04;
 
             byte[] splineMasterHeader = new byte[expectedMasterHeaderSize];
-            WriteUint32(ref splineMasterHeader, 0x00, (uint)DataStore.splines.Count);
+            WriteUint32(ref splineMasterHeader, 0x00, (uint)DataStoreGameplay.splines.Count);
 
             byte[] splineDataBlock = new byte[0];
 
-            foreach (Spline spline in DataStore.splines)
+            foreach (Spline spline in DataStoreGameplay.splines)
             {
                 int currentSplineOffset = splineDataBlock.Length;
                 //Write the pointer to the current spline data in the header
-                WriteUint32(ref splineMasterHeader, 0x10 + (DataStore.splines.IndexOf(spline) * 4), (uint)currentSplineOffset);
+                WriteUint32(ref splineMasterHeader, 0x10 + (DataStoreGameplay.splines.IndexOf(spline) * 4), (uint)currentSplineOffset);
 
                 //How many vertices are in this spline
                 int vertexCount = spline.vertexBuffer.Length / 3;

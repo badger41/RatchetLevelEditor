@@ -1,4 +1,5 @@
 ﻿using RatchetLevelEditor;
+using RatchetLevelEditor.Engine;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -15,8 +16,8 @@ class TextureParser
 {
     public static Bitmap getTextureImage(int textureId)
     {
-        RatchetTexture_General tex = DataStore.textures.Find(x => x.ID == textureId);
-        int textureIndex = DataStore.textures.IndexOf(tex);
+        RatchetTexture_General tex = DataStoreEngine.textures.Find(x => x.ID == textureId);
+        int textureIndex = DataStoreEngine.textures.IndexOf(tex);
         if (tex.renderedImage == null)
         {
             Bitmap texImageBMap;

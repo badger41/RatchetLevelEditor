@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RatchetLevelEditor.Gameplay;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -252,13 +253,13 @@ namespace RatchetLevelEditor
         {
             uint pointer = BAToUInt32(ReadBlock(gpf, (uint) index, 4), 0);
             uint mobyCount = BAToUInt32(ReadBlock(gpf, pointer, 4), 0);
-            DataStore.mobyUnknownVal = BAToUInt32(ReadBlock(gpf, pointer + 0x04, 4), 0);
+            DataStoreGameplay.mobyUnknownVal = BAToUInt32(ReadBlock(gpf, pointer + 0x04, 4), 0);
             byte[] mobyBlock = ReadBlock(gpf, pointer + 0x10, mobyCount * gameplayHeader.mobyElemSize);
 
             for (uint i = 0; i < mobyCount; i++)
             {
                 RatchetMoby mob = new RatchetMoby((uint) racNum, mobyBlock, i);
-                DataStore.mobs.Add(mob);
+                DataStoreGameplay.mobs.Add(mob);
             }
         }
 
@@ -288,7 +289,7 @@ namespace RatchetLevelEditor
                 mobpVars = getBytes(pVarBlock, (int)mobpVarsStart, (int)mobpVarsCount);
                 pVars.Add(mobpVars);
             }
-            DataStore.pVarList = pVars;
+            DataStoreGameplay.pVarList = pVars;
         }
 
         public static void parseMobyPvarHeaderPointers(int index)
@@ -306,7 +307,7 @@ namespace RatchetLevelEditor
         public static void parseSplines(int index)
         {
             uint pointer = ReadUInt32(gpf, (uint) index);
-            DataStore.splines = new List<Spline>();
+            DataStoreGameplay.splines = new List<Spline>();
 
             uint splineCount = BAToUInt32(ReadBlock(gpf, pointer, 4), 0);
             uint splineOffset = BAToUInt32(ReadBlock(gpf, pointer + 4, 4), 0);
@@ -316,7 +317,7 @@ namespace RatchetLevelEditor
             for (uint i = 0; i < splineCount; i++)
             {
                 uint offset = BAToUInt32(splineHeadBlock, (i * 4));
-                DataStore.splines.Add(new Spline(splineBlock, offset));
+                DataStoreGameplay.splines.Add(new Spline(splineBlock, offset));
             }
         }
 

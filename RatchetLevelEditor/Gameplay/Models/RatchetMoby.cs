@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RatchetLevelEditor.Gameplay;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -124,8 +125,8 @@ namespace RatchetLevelEditor
 
             if ((int)propIndex > 0)
             {
-                pVars = DataStore.pVarList[(int)propIndex];
-                pVarConfig = DataStore.pVarMap.Where(x => x.modelIds.Contains(modelID)).FirstOrDefault()?.pVars;
+                pVars = DataStoreGameplay.pVarList[(int)propIndex];
+                pVarConfig = DataStoreGlobal.pVarMap.Where(x => x.modelIds.Contains(modelID)).FirstOrDefault()?.pVars;
             }
             else
             {
@@ -183,8 +184,8 @@ namespace RatchetLevelEditor
             cutScene = 0;
             if ((int)propIndex > 0)
             {
-                pVars = DataStore.pVarList[(int)propIndex];
-                pVarConfig = DataStore.pVarMap.Where(x => x.modelIds.Contains(modelID)).FirstOrDefault()?.pVars;
+                pVars = DataStoreGameplay.pVarList[(int)propIndex];
+                pVarConfig = DataStoreGlobal.pVarMap.Where(x => x.modelIds.Contains(modelID)).FirstOrDefault()?.pVars;
             }
             else
             {
@@ -234,8 +235,8 @@ namespace RatchetLevelEditor
             cutScene = 0;
             if ((int)propIndex > 0)
             {
-                pVars = DataStore.pVarList[(int)propIndex];
-                pVarConfig = DataStore.pVarMap.Where(x => x.modelIds.Contains(modelID)).FirstOrDefault() ? .pVars;
+                pVars = DataStoreGameplay.pVarList[(int)propIndex];
+                pVarConfig = DataStoreGlobal.pVarMap.Where(x => x.modelIds.Contains(modelID)).FirstOrDefault() ? .pVars;
             }
             else
             {
@@ -250,8 +251,8 @@ namespace RatchetLevelEditor
             //0x04 = ??? but its required
             //0x08 - 0x0C = null
             byte[] mobyInitHeader = new byte[0x10];
-            WriteUint32(ref mobyInitHeader, 0x00, (uint)DataStore.mobs.Count);
-            WriteUint32(ref mobyInitHeader, 0x04, DataStore.mobyUnknownVal);
+            WriteUint32(ref mobyInitHeader, 0x00, (uint)DataStoreGameplay.mobs.Count);
+            WriteUint32(ref mobyInitHeader, 0x04, DataStoreGameplay.mobyUnknownVal);
 
             int currentOffset = gameplay_ntsc.Length;
             Array.Resize(ref gameplay_ntsc, (int)(gameplay_ntsc.Length + mobyInitHeader.Length));
@@ -261,7 +262,7 @@ namespace RatchetLevelEditor
             switch (racNum)
             {
                 case 1:
-                    foreach (RatchetMoby mob in DataStore.mobs)
+                    foreach (RatchetMoby mob in DataStoreGameplay.mobs)
                     {
                         byte[] data = new byte[mob.length];
 
@@ -312,7 +313,7 @@ namespace RatchetLevelEditor
 
                 case 2:
                 case 3:
-                    foreach (RatchetMoby mob in DataStore.mobs)
+                    foreach (RatchetMoby mob in DataStoreGameplay.mobs)
                     {
                         byte[] data = new byte[mob.length];
                         WriteUint32(ref data, 0x00, mob.length);
@@ -367,7 +368,7 @@ namespace RatchetLevelEditor
                     break;
 
                 case 4:
-                    foreach (RatchetMoby mob in DataStore.mobs)
+                    foreach (RatchetMoby mob in DataStoreGameplay.mobs)
                     {
                         byte[] data = new byte[mob.length];
                         WriteUint32(ref data, 0x00, mob.length);
@@ -430,14 +431,14 @@ namespace RatchetLevelEditor
             //writeBytes(gameplay_ntsc, currentOffset, space, space.Length);
 
             //pVar sizes have to be stored as well
-            int expectedSize = DataStore.pVarList.Count * 0x08;
+            int expectedSize = DataStoreGameplay.pVarList.Count * 0x08;
 
 
 
             byte[] pVarSizes = new byte[expectedSize];
             uint pVarSizeOffset = 0;
 
-            foreach (byte[] pvar in DataStore.pVarList)
+            foreach (byte[] pvar in DataStoreGameplay.pVarList)
             {
 
                 byte[] pVarSize = new byte[0x08];
@@ -448,7 +449,7 @@ namespace RatchetLevelEditor
                 WriteUint32(ref pVarSize, 0x04, (uint)pvar.Length);
 
                 //Write the new pvar size data to appropriate index
-                int pVarIndex = DataStore.pVarList.IndexOf(pvar);
+                int pVarIndex = DataStoreGameplay.pVarList.IndexOf(pvar);
                 writeBytes(pVarSizes, pVarIndex * 0x08, pVarSize, 8);
 
                 //Increment the size of the offset
@@ -470,7 +471,7 @@ namespace RatchetLevelEditor
             int currentOffset = gameplay_ntsc.Length;
             byte[] pvarBlock = new byte[0];
 
-            foreach (byte[] pvar in DataStore.pVarList)
+            foreach (byte[] pvar in DataStoreGameplay.pVarList)
             {
                 //Add 0x08 to the size of the pvar size array
                 Array.Resize(ref pvarBlock, (int)(pvarBlock.Length + pvar.Length));

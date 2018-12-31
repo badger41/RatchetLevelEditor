@@ -8,6 +8,7 @@ using static RatchetModel;
 using static DataFunctions;
 using RatchetLevelEditor;
 using static RatchetTexture;
+using RatchetLevelEditor.Engine;
 
 class GadgetsParser
     {
@@ -38,7 +39,7 @@ class GadgetsParser
             texture.height = BAToShort(texture.texHeader, 0x1A);
             texture.texData = vfs != null ? ReadBlock(vfs, currentTexturePointer, nextTexturePointer - currentTexturePointer) : null;
             texture.reverseRGB = false;
-            DataStore.textures.Add(texture);
+            DataStoreEngine.textures.Add(texture);
         }
         #endregion
 
@@ -130,7 +131,7 @@ class GadgetsParser
                     }
                 }
             }
-            DataStore.spawnableModels.Add(model);
+            DataStoreEngine.spawnableModels.Add(model);
 
         }
         #endregion

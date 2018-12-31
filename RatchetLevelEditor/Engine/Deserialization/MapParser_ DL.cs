@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using static DataFunctions;
 using static RatchetModel;
 using static RatchetTexture;
+using RatchetLevelEditor.Engine;
+using RatchetLevelEditor.Gameplay;
 
 namespace RatchetLevelEditor
 {
@@ -32,7 +34,7 @@ namespace RatchetLevelEditor
 
             #region GameplayHeader
             GameplayHeader gameplayHeader = new GameplayHeader(gpf, racNum);
-            DataStore.gameplayHeader = gameplayHeader;
+            DataStoreGameplay.gameplayHeader = gameplayHeader;
 
             #endregion
 
@@ -62,7 +64,7 @@ namespace RatchetLevelEditor
                         mobpVars = getBytes(pVarBlock, (int) mobpVarsStart, (int) mobpVarsCount);
                         pVars.Add(mobpVars);
                     }
-                    DataStore.pVarList = pVars;
+                    DataStoreGameplay.pVarList = pVars;
                     break;
             }
             #endregion pVars
@@ -75,11 +77,11 @@ namespace RatchetLevelEditor
             for (uint i = 0; i < mobyCount; i++)
             {
                 RatchetMoby mob = new RatchetMoby(racNum, mobyBlock, i);
-                DataStore.mobs.Add(mob);
+                DataStoreGameplay.mobs.Add(mob);
             }
             #endregion
 
-            DataStore.splines = new List<Spline>();
+            DataStoreGameplay.splines = new List<Spline>();
 
             uint splineCount = BAToUInt32(ReadBlock(gpf, gameplayHeader.splinePointer, 4), 0);
             uint splineOffset = BAToUInt32(ReadBlock(gpf, gameplayHeader.splinePointer + 4, 4), 0);
@@ -89,7 +91,7 @@ namespace RatchetLevelEditor
             for (uint i = 0; i < splineCount; i++)
             {
                 uint offset = BAToUInt32(splineHeadBlock, (i * 4));
-                DataStore.splines.Add(new Spline(splineBlock, offset));
+                DataStoreGameplay.splines.Add(new Spline(splineBlock, offset));
             }
 
 
@@ -124,7 +126,7 @@ namespace RatchetLevelEditor
             //(0x88) sound config (spawnables + everything else)
 
             EngineHeader engHead = new EngineHeader(fs, 4);
-            DataStore.engineHeader = engHead;
+            DataStoreEngine.engineHeader = engHead;
             #endregion
 
             //Load DL Spawnable Models
@@ -220,7 +222,7 @@ namespace RatchetLevelEditor
                     }
 
                 }
-                DataStore.spawnableModels.Add(model);
+                DataStoreEngine.spawnableModels.Add(model);
             }
             #endregion
 
@@ -293,7 +295,7 @@ namespace RatchetLevelEditor
                     model.indiceBuff.Add(BAToUInt16(indiceBuff, i * sizeof(ushort)));
                 }
 
-                DataStore.levelModels.Add(model);
+                DataStoreEngine.levelModels.Add(model);
             }
             #endregion
 
@@ -362,7 +364,7 @@ namespace RatchetLevelEditor
                     model.indiceBuff.Add(BAToUInt16(indiceBuff, i * sizeof(ushort)));
                 }
 
-                DataStore.sceneryModels.Add(model);
+                DataStoreEngine.sceneryModels.Add(model);
                 //Console.WriteLine("Scenery Model Added: 0x" + model.modelID.ToString("X4"));
             }
             #endregion
@@ -465,7 +467,7 @@ namespace RatchetLevelEditor
                 }
                 model.vertexCount = vertCount;
                 model.faceCount = prevFaceCount;
-                DataStore.terrainModel = model;
+                DataStoreEngine.terrainModel = model;
             }
             #endregion
             
@@ -588,27 +590,27 @@ namespace RatchetLevelEditor
                 }
                 model.vertexCount = vertCount;
                 model.faceCount = prevFaceCount;
-                DataStore.chunks.Add(model);
+                DataStoreEngine.chunks.Add(model);
             }
             #endregion
 
 
             //Load Level Model Placement
             byte[] levelObjectBlock = ReadBlock(fs, levelModelsPlacementPointer, levelObjectsCount * 0x70);
-            DataStore.levelObjects = new List<LevelObject>();
+            DataStoreEngine.levelObjects = new List<LevelObject>();
             for (uint i = 0; i < levelObjectsCount; i++)
             {
-                LevelObject levObj = new LevelObject(levelObjectBlock, i);
-                DataStore.levelObjects.Add(levObj);
+                //LevelObject levObj = new LevelObject(levelObjectBlock, i);
+                //DataStoreEngine.levelObjects.Add(levObj);
             }
 
             //Load Scenery Model Placement
             byte[] sceneryObjectBlock = ReadBlock(fs, sceneryModelsPlacementPointer, sceneryObjectsCount * 0x70);
-            DataStore.sceneryObjects = new List<LevelObject>();
+            DataStoreEngine.sceneryObjects = new List<LevelObject>();
             for (uint i = 0; i < sceneryObjectsCount; i++)
             {
-                LevelObject levObj = new LevelObject(sceneryObjectBlock, i);
-                DataStore.sceneryObjects.Add(levObj);
+                //LevelObject levObj = new LevelObject(sceneryObjectBlock, i);
+               // DataStoreEngine.sceneryObjects.Add(levObj);
             }
 
             /*
@@ -688,7 +690,7 @@ namespace RatchetLevelEditor
                 texture.height = BAToShort(texture.texHeader, 0x1A);
                 texture.texData = vfs != null ? ReadBlock(vfs, currentTexturePointer, nextTexturePointer - currentTexturePointer) : null;
                 texture.reverseRGB = false;
-                DataStore.textures.Add(texture);
+                DataStoreEngine.textures.Add(texture);
                 //Console.WriteLine("Texture : " + x + " Width: " + texture.width + " Height: " + texture.height);
             }
             #endregion
@@ -703,25 +705,25 @@ namespace RatchetLevelEditor
             //Load the remaining unknown or unhandled data
             #region Remaining Data
 
-            DataStore.mapRenderDefintions = getSection(fs, 0x04);
-            DataStore.enginePtr_08 = getSection(fs, 0x08);
-            DataStore.enginePtr_0C = getSection(fs, 0x0C);
-            DataStore.skyBox = getSection(fs, 0x14);
-            DataStore.collisionMap = getSection(fs, 0x18);
-            DataStore.enginePtr_44 = getSection(fs, 0x44);
-            DataStore.soundsConfig = getSection(fs, 0x54);
-            DataStore.enginePtr_4C = getSection(fs, 0x4C);
-            DataStore.enginePtr_50 = getSection(fs, 0x50);
-            DataStore.lighting = getSection(fs, 0x68);
-            DataStore.lightingConfig = getSection(fs, 0x6C);
-            DataStore.textureConfigMenu = getSection(fs, 0x74);
-            DataStore.textureConfig2DGFX = getSection(fs, 0x7C);
-            DataStore.spriteDef = getSection(fs, 0x80);
+            DataStoreEngine.mapRenderDefintions = getSection(fs, 0x04);
+            DataStoreEngine.enginePtr_08 = getSection(fs, 0x08);
+            DataStoreEngine.enginePtr_0C = getSection(fs, 0x0C);
+            DataStoreEngine.skyBox = getSection(fs, 0x14);
+            DataStoreEngine.collisionMap = getSection(fs, 0x18);
+            DataStoreEngine.enginePtr_44 = getSection(fs, 0x44);
+            DataStoreEngine.soundsConfig = getSection(fs, 0x54);
+            DataStoreEngine.enginePtr_4C = getSection(fs, 0x4C);
+            DataStoreEngine.enginePtr_50 = getSection(fs, 0x50);
+            DataStoreEngine.lighting = getSection(fs, 0x68);
+            DataStoreEngine.lightingConfig = getSection(fs, 0x6C);
+            DataStoreEngine.textureConfigMenu = getSection(fs, 0x74);
+            DataStoreEngine.textureConfig2DGFX = getSection(fs, 0x7C);
+            DataStoreEngine.spriteDef = getSection(fs, 0x80);
 
             #endregion
 
             #region raw Data //need to properly handle these eventually
-            DataStore.terrainModel.rawData = getSection(fs, 0x48);
+            DataStoreEngine.terrainModel.rawData = getSection(fs, 0x48);
             //rawLevelModelBlock = getSection(fs, 0x1C);
             //rawSceneryModelBlock = getSection(fs, 0x2C);
             #endregion
@@ -820,7 +822,7 @@ namespace RatchetLevelEditor
             List<MobyPropertyVariableConfig> pVarConfigs = new List<MobyPropertyVariableConfig>();
             string jsonString = File.ReadAllText("./Config/Rac4/MobyPropertyVariables.json");
             pVarConfigs = JsonConvert.DeserializeObject<List<MobyPropertyVariableConfig>>(jsonString);
-            DataStore.pVarMap = pVarConfigs;
+            DataStoreGlobal.pVarMap = pVarConfigs;
         }
     }
 

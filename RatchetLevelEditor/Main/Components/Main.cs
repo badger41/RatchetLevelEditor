@@ -1,4 +1,7 @@
-﻿using System;
+﻿using RatchetLevelEditor.Engine;
+using RatchetLevelEditor.Engine.Deserialization;
+using RatchetLevelEditor.Gameplay;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -69,7 +72,7 @@ namespace RatchetLevelEditor
 
             //Set our working directory, this will be referenced around the entire editor
             workingDirectory = directory;
-            DataStore.workingDirectory = workingDirectory;
+            DataStoreGlobal.workingDirectory = workingDirectory;
 
             //Identify file with a trailing number, such as skin20.ps3
             string fileNumber = Regex.Match(fileName, @"\d+").Value;
@@ -99,8 +102,10 @@ namespace RatchetLevelEditor
 											case RCGame.RatchetAndClank:
 											case RCGame.GoingCommando:
 											case RCGame.UpYourArsenal:
-												MapParser_UYA.parseMap(directory, Constants.fileNames[i, subFiles]);
-												break;
+
+                                                EngineDeserializer.parseEngine(directory, 2);
+                                                MapParser_UYA.parseMap(directory, Constants.fileNames[i, subFiles]);
+                                                break;
 											case RCGame.Deadlocked:
 												MapParser_DL.parseMap(directory, Constants.fileNames[i, subFiles]);
 												break;
@@ -137,17 +142,17 @@ namespace RatchetLevelEditor
             }
 
             //Once we are done loading everything, check DataSource and enable our buttons as needed
-            texToolStripButton.Enabled = DataStore.textures.Count > 0;
+            texToolStripButton.Enabled = DataStoreEngine.textures.Count > 0;
             bool hasModels = (
-                DataStore.spawnableModels.Count > 0
+                DataStoreEngine.spawnableModels.Count > 0
                 ||
-                DataStore.levelModels.Count > 0
+                DataStoreEngine.levelModels.Count > 0
                 ||
-                DataStore.sceneryModels.Count > 0
+                DataStoreEngine.sceneryModels.Count > 0
                 );
             modelToolStripButton.Enabled = hasModels;
 
-            objEditTool.Enabled = DataStore.mobs.Count > 0;
+            objEditTool.Enabled = DataStoreGameplay.mobs.Count > 0;
         }
         // Read the file and display it line by line.
         public void getModelNames(RCGame game)
