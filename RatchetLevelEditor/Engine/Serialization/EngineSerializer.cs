@@ -125,6 +125,8 @@ namespace RatchetLevelEditor.Engine.Serialization
             File.WriteAllBytes(path + "/engineTEST.ps3", engine);
             File.WriteAllBytes(path + "/vramTEST.ps3", vram);
 
+            Console.WriteLine("Serializing engine and vram complete.");
+
         }
 
         public static void serializeUnknownHeaderData(int index)

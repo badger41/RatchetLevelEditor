@@ -138,7 +138,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
             //Close the stream
             efs.Close();
 
-            EngineSerializer.serialize(path, racNum);
+            //EngineSerializer.serialize(path, racNum);
         }
 
         //Any unhandled engine element is funneled through this method.

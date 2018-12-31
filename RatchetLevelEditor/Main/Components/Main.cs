@@ -1,5 +1,6 @@
 ﻿using RatchetLevelEditor.Engine;
 using RatchetLevelEditor.Engine.Deserialization;
+using RatchetLevelEditor.Engine.Serialization;
 using RatchetLevelEditor.Gameplay;
 using System;
 using System.Collections.Generic;
@@ -267,6 +268,11 @@ namespace RatchetLevelEditor
                 levelObjectViewer.Visible = true;
             else
                 levelObjectViewer.Visible = false;
+        }
+
+        private void saveMapMenuItem_Click(object sender, EventArgs e)
+        {
+            EngineSerializer.serialize(DataStoreGlobal.workingDirectory, 3);
         }
     }
 }

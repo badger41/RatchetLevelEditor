@@ -35,7 +35,10 @@
             this.saveMapMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.terrainToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.objEditTool = new System.Windows.Forms.ToolStripButton();
+            this.levelObjToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.modelToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.texToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.texConfigToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -45,9 +48,6 @@
             this.interfaceStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.consoleStripButton = new System.Windows.Forms.ToolStripButton();
-            this.terrainToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.levelObjToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.mainMenu.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -76,17 +76,17 @@
             // 
             this.openMapMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("openMapMenuItem.Image")));
             this.openMapMenuItem.Name = "openMapMenuItem";
-            this.openMapMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.openMapMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openMapMenuItem.Text = "Open Map";
             this.openMapMenuItem.Click += new System.EventHandler(this.openMapMenuItem_Click);
             // 
             // saveMapMenuItem
             // 
-            this.saveMapMenuItem.Enabled = false;
             this.saveMapMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("saveMapMenuItem.Image")));
             this.saveMapMenuItem.Name = "saveMapMenuItem";
-            this.saveMapMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.saveMapMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveMapMenuItem.Text = "Save Map";
+            this.saveMapMenuItem.Click += new System.EventHandler(this.saveMapMenuItem_Click);
             // 
             // exportDataToolStripMenuItem
             // 
@@ -117,6 +117,16 @@
             this.toolStrip1.TabIndex = 6;
             this.toolStrip1.Text = "toolStrip1";
             // 
+            // terrainToolStripButton
+            // 
+            this.terrainToolStripButton.CheckOnClick = true;
+            this.terrainToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.terrainToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.terrainToolStripButton.Name = "terrainToolStripButton";
+            this.terrainToolStripButton.Size = new System.Drawing.Size(48, 22);
+            this.terrainToolStripButton.Text = "Terrain";
+            this.terrainToolStripButton.CheckedChanged += new System.EventHandler(this.terrainToolStripButton_CheckedChanged);
+            // 
             // objEditTool
             // 
             this.objEditTool.CheckOnClick = true;
@@ -127,6 +137,21 @@
             this.objEditTool.Size = new System.Drawing.Size(47, 22);
             this.objEditTool.Text = "&Mobys";
             this.objEditTool.CheckedChanged += new System.EventHandler(this.objEditTool_CheckedChanged);
+            // 
+            // levelObjToolStripButton
+            // 
+            this.levelObjToolStripButton.CheckOnClick = true;
+            this.levelObjToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.levelObjToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.levelObjToolStripButton.Name = "levelObjToolStripButton";
+            this.levelObjToolStripButton.Size = new System.Drawing.Size(81, 22);
+            this.levelObjToolStripButton.Text = "Level Objects";
+            this.levelObjToolStripButton.CheckedChanged += new System.EventHandler(this.levelObjToolStripButton_CheckedChanged);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
             // modelToolStripButton
             // 
@@ -146,7 +171,7 @@
             this.texToolStripButton.Enabled = false;
             this.texToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.texToolStripButton.Name = "texToolStripButton";
-            this.texToolStripButton.Size = new System.Drawing.Size(54, 22);
+            this.texToolStripButton.Size = new System.Drawing.Size(55, 22);
             this.texToolStripButton.Text = "&Textures";
             this.texToolStripButton.CheckedChanged += new System.EventHandler(this.texToolStripButton_CheckedChanged);
             // 
@@ -157,7 +182,7 @@
             this.texConfigToolStripButton.Enabled = false;
             this.texConfigToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.texConfigToolStripButton.Name = "texConfigToolStripButton";
-            this.texConfigToolStripButton.Size = new System.Drawing.Size(93, 22);
+            this.texConfigToolStripButton.Size = new System.Drawing.Size(94, 22);
             this.texConfigToolStripButton.Text = "Texture Configs";
             // 
             // spritesToolStripButton
@@ -213,31 +238,6 @@
             this.consoleStripButton.Name = "consoleStripButton";
             this.consoleStripButton.Size = new System.Drawing.Size(54, 22);
             this.consoleStripButton.Text = "&Console";
-            // 
-            // terrainToolStripButton
-            // 
-            this.terrainToolStripButton.CheckOnClick = true;
-            this.terrainToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.terrainToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.terrainToolStripButton.Name = "terrainToolStripButton";
-            this.terrainToolStripButton.Size = new System.Drawing.Size(47, 22);
-            this.terrainToolStripButton.Text = "Terrain";
-            this.terrainToolStripButton.CheckedChanged += new System.EventHandler(this.terrainToolStripButton_CheckedChanged);
-            // 
-            // levelObjToolStripButton
-            // 
-            this.levelObjToolStripButton.CheckOnClick = true;
-            this.levelObjToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.levelObjToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.levelObjToolStripButton.Name = "levelObjToolStripButton";
-            this.levelObjToolStripButton.Size = new System.Drawing.Size(81, 22);
-            this.levelObjToolStripButton.Text = "Level Objects";
-            this.levelObjToolStripButton.CheckedChanged += new System.EventHandler(this.levelObjToolStripButton_CheckedChanged);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
             // Main
             // 

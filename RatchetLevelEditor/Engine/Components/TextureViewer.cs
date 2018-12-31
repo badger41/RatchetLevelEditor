@@ -468,7 +468,37 @@ namespace RatchetLevelEditor
 
         private void textureReplaceCM_Click(object sender, EventArgs e)
         {
-
+            RatchetTexture_General texture = DataStoreEngine.textures[textureList.SelectedIndex];
+            if (addTextureDialog.ShowDialog() == DialogResult.OK)
+            {
+                byte[] img = File.ReadAllBytes(addTextureDialog.FileName);
+                switch (addTextureDialog.FilterIndex)
+                {
+                    case 1: //BMP
+                    case 2: //PNG
+                    case 3: //JPG
+                        Console.WriteLine("Replacing texture");
+                        using (MagickImage image = new MagickImage(addTextureDialog.FileName))
+                        {
+                            image.Format = MagickFormat.Dxt5;
+                            texture.texData = removeHeader(image.ToByteArray());
+                            texture.width = image.Width;
+                            texture.height = image.Height;
+                            DataStoreEngine.textures[textureList.SelectedIndex] = texture;
+                        }
+                        break;
+                    case 4: //DXT3
+                       // if (ShowSizeInputDialog(ref width, ref height) == DialogResult.OK)
+                            //replaceTexture(textureList.SelectedIndex, width, height, img);
+                        break;
+                    case 5: //DDS
+                        texture.texData = removeHeader(img);
+                        texture.width = ReadUInt16(img, 0x10);
+                        texture.height = ReadUInt16(img, 0x0C);
+                        DataStoreEngine.textures[textureList.SelectedIndex] = texture;
+                        break;
+                }
+            }
         }
 
         private void exportAsToolStripMenuItem_Click(object sender, EventArgs e)
