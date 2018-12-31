@@ -39,6 +39,8 @@ namespace RatchetLevelEditor.Engine
         public static List<RatchetModel_General> sceneryModels = new List<RatchetModel_General>();
         public static List<ShrubModel> shrubModels = new List<ShrubModel>();
 
+        public static List<RatchetPlayerAnimation> playerAnims = new List<RatchetPlayerAnimation>();
+
         public static List<LevelObject> levelObjects = new List<LevelObject>();
         public static List<LevelObject> sceneryObjects = new List<LevelObject>();
         public static uint levelModelsCount;

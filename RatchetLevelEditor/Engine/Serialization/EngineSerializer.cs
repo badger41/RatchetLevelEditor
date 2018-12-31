@@ -39,7 +39,7 @@ namespace RatchetLevelEditor.Engine.Serialization
                         {0x0C, new Action<dynamic>(i => { serializeUnknownHeaderData(0x0C); }) },
                         {0x10, new Action<dynamic>(i => { serializeUnknownHeaderData(0x10); }) },
                         {0x14, new Action<dynamic>(i => { serializeTerrainCollision(ref engine, 0x14, racNum); }) },
-                        {0x18, new Action<dynamic>(i => { serializeUnknownHeaderData(0x18); }) },
+                        {0x18, new Action<dynamic>(i => { serializePlayerAnims(ref engine, 0x18, racNum); }) },
                         {0x1C, new Action<dynamic>(i => { serializeTieModels(ref engine, 0x1C, racNum); }) },
                         {0x24, new Action<dynamic>(i => { serializeTies(ref engine, 0x24, racNum); }) },
                         {0x2C, new Action<dynamic>(i => { serializeShrubModels(ref engine, 0x2C, racNum); }) },
@@ -633,6 +633,35 @@ namespace RatchetLevelEditor.Engine.Serialization
 
             return;
 
+        }
+        #endregion
+
+        #region Campaign Player Animations
+        public static void serializePlayerAnims(ref byte[] engine, int index, int racNum)
+        {
+            int currentOffset = engine.Length;
+            int playerAnimPointerBlockOffset = engine.Length;
+            byte[] playerAnimPointerBlock = new byte[0x200];
+            Array.Resize(ref engine, engine.Length + playerAnimPointerBlock.Length);
+
+            int animOffset = 0;
+            foreach (RatchetPlayerAnimation anim in DataStoreEngine.playerAnims)
+            {
+                currentOffset = engine.Length;
+
+                if (anim.rawData != null)
+                {
+                    writeBytes(playerAnimPointerBlock, animOffset, (uint)currentOffset, 4);
+                    Array.Resize(ref engine, engine.Length + anim.rawData.Length);
+                    writeBytes(engine, currentOffset, anim.rawData, anim.rawData.Length);
+
+                } else
+                {
+                    writeBytes(playerAnimPointerBlock, animOffset, 0, 4);
+                }
+                animOffset += 0x04;
+            };
+            writeBytes(engine, playerAnimPointerBlockOffset, playerAnimPointerBlock, playerAnimPointerBlock.Length);
         }
         #endregion
     }

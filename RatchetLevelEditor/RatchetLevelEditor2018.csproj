@@ -119,6 +119,7 @@
     <Compile Include="Engine\DataStoreEngine.cs" />
     <Compile Include="Engine\Deserialization\EngineDeserializer.cs" />
     <Compile Include="Engine\Models\EngineHeader.cs" />
+    <Compile Include="Engine\Models\RatchetPlayerAnimation.cs" />
     <Compile Include="Engine\Models\ShrubModel.cs" />
     <Compile Include="Engine\Models\TieModel.cs" />
     <Compile Include="Engine\Serialization\EngineSerializer.cs" />

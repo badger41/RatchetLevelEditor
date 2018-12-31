@@ -52,7 +52,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
                         {0x0C, new Action<dynamic>(i => { getUnknownHeaderData(0x0C); }) },
                         {0x10, new Action<dynamic>(i => { getUnknownHeaderData(0x10); }) },
                         {0x14, new Action<dynamic>(i => { deSerializeTerrainCollision(ref DataStoreEngine.collVertBuff, ref DataStoreEngine.collIndBuff, 0x14, racNum); }) },
-                        {0x18, new Action<dynamic>(i => { getUnknownHeaderData(0x18); }) },
+                        {0x18, new Action<dynamic>(i => { deSerializePlayerAnims(ref DataStoreEngine.playerAnims, 0x18, racNum); }) },
                         {0x1C, new Action<dynamic>(i => { deSerializeTieModels(ref DataStoreEngine.levelModels, ref DataStoreEngine.tieModels, 0x1C, racNum); }) },
 
                         {0x2C, new Action<dynamic>(i => { deSerializeShrubModelss(ref DataStoreEngine.sceneryModels, ref DataStoreEngine.shrubModels, 0x2C, racNum); }) },
@@ -1133,6 +1133,65 @@ namespace RatchetLevelEditor.Engine.Deserialization
                             }
                         }
                     }
+                }
+            }
+        }
+        #endregion
+
+        #region Campaign Player Anims
+        public static void deSerializePlayerAnims(ref List<RatchetPlayerAnimation> playerAnims, int index, int racNum)
+        {
+            uint pointer = ReadUInt32(ReadBlock(efs, (uint)index, 4), 0);
+
+            //MP maps dont have this data
+            if (pointer != 0)
+            {
+                //The anims are scattered in a block 0x200 big
+                byte[] playerAnimPointerBlock = ReadBlock(efs, pointer, 0x200);
+
+                for (int i = 0; i < playerAnimPointerBlock.Length; i += 0x04)
+                {
+                    RatchetPlayerAnimation anim;
+                    uint animPointer = ReadUInt32(playerAnimPointerBlock, i);
+
+                    //If the index has an anim pointer
+                    if (animPointer != 0)
+                    {
+
+                        //First, we determine how many relative pointers are in this list
+                        int unk_count = ReadBlock(efs, animPointer + 0x10, 1)[0];
+
+                        //We then go to the last relative pointer in this list
+                        uint lastPointerRel = ReadUInt32(efs, (uint)(animPointer + 0x18 + (unk_count * 0x04)));
+
+                        //Add the relative pointer + the initial pointer to get the absolute
+                        uint lastPointerAbs = lastPointerRel + animPointer;
+
+                        //Next, get the count, i have no idea what it is but it will get us to the end of the animation
+                        ushort next_unk_count = ReadUInt16(ReadBlock(efs, lastPointerAbs + 0x06, 2), 0);
+
+                        //Lastly, we take the absolute pointer, add 0x10 and then 0x10 for every index
+                        uint endOfAnim = (uint)(lastPointerAbs + 0x10 + (next_unk_count * 0x10));
+
+                        //animPointer + endOfAnim = block of data that is our animation
+
+                        anim = new RatchetPlayerAnimation()
+                        {
+                            index = i / 4,
+                            unk_count = unk_count,
+                            rawData = ReadBlock(efs, animPointer, endOfAnim - animPointer)
+                        };
+                    }
+                    else
+                    {
+                        //initialize an anim with no data
+                        anim = new RatchetPlayerAnimation()
+                        {
+                            index = i / 4,
+                        };
+                    }
+
+                    playerAnims.Add(anim);
                 }
             }
         }
