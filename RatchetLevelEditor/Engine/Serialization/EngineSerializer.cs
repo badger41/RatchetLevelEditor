@@ -185,7 +185,7 @@ namespace RatchetLevelEditor.Engine.Serialization
                 }
                 else
                 {
-                    writeBytes(engine, currentOffset + offset, 0, 4);
+                    //writeBytes(engine, currentOffset + offset, 0, 4);
                 }
                 offset += 0x04;
             }
@@ -329,7 +329,7 @@ namespace RatchetLevelEditor.Engine.Serialization
             writeBytes(engine, currentOffset, tieBlock, tieBlock.Length);
 
 
-            int vertexColorOffset = 0;
+            int vertexColorOffset = engine.Length;
             List<byte[]> vertexColorBlock = new List<byte[]>();
 
             //Write the ties count to the header
@@ -375,14 +375,13 @@ namespace RatchetLevelEditor.Engine.Serialization
                 WriteUint32(ref tieData, 0x68, tie.off_68);
                 WriteUint32(ref tieData, 0x6C, tie.off_6C);
 
-                uint padding = 0;
-                while((tie.vertexColors.Length + padding) % 0x10 != 0)
-                {
-                    padding++;
-                }
-
-                vertexColorOffset += (int)(tie.vertexColors.Length + padding);
                 vertexColorBlock.Add(tie.vertexColors);
+                vertexColorOffset += tie.vertexColors.Length;
+
+                while((vertexColorOffset) % 0x10 != 0)
+                {
+                    vertexColorOffset++;
+                }
 
                 /*currentOffset = engine.Length;
                 Array.Resize(ref engine, (int)(engine.Length + tie.vertexColors.Length + padding));
@@ -393,12 +392,15 @@ namespace RatchetLevelEditor.Engine.Serialization
 
             }
             int engineLength = engine.Length;
-            int length = vertexColorBlock.Sum(arr => arr.Length);
-            Array.Resize(ref engine, engineLength + length);
+            Array.Resize(ref engine, vertexColorOffset);
             foreach(var vertexColor in vertexColorBlock)
             {
                 vertexColor.CopyTo(engine, engineLength);
                 engineLength += vertexColor.Length;
+                while ((engineLength) % 0x10 != 0)
+                {
+                    engineLength++;
+                }
             }
         }
         #endregion
@@ -740,7 +742,11 @@ namespace RatchetLevelEditor.Engine.Serialization
 
             int currentOffset = engine.Length;
             int playerAnimPointerBlockOffset = engine.Length;
-            byte[] playerAnimPointerBlock = new byte[0x200];
+
+            int animBlockSize = DataStoreEngine.spawnableModels[0].animationsCount * 0x04;
+            while((animBlockSize % 0x10) != 0) { animBlockSize++; }
+
+            byte[] playerAnimPointerBlock = new byte[animBlockSize];
             Array.Resize(ref engine, engine.Length + playerAnimPointerBlock.Length);
 
             int animOffset = 0;

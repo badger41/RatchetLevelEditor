@@ -60,7 +60,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
                         {0x44, new Action<dynamic>(i => { getUnknownHeaderData(0x44); }) },
                         {0x48, new Action<dynamic>(i => { getUnknownHeaderData(0x48); }) },
                         {0x4C, new Action<dynamic>(i => { getUnknownHeaderData(0x4C); }) },
-                        {0x50, new Action<dynamic>(i => { getUnknownHeaderData(0x50); }) },
+                        //{0x50, new Action<dynamic>(i => { getUnknownHeaderData(0x50); }) },
                         {0x54, new Action<dynamic>(i => { deSerializeTextures(ref DataStoreEngine.textures, 0x54, racNum); }) },
                         {0x5C, new Action<dynamic>(i => { getUnknownHeaderData(0x5C); }) },
                         {0x64, new Action<dynamic>(i => { getUnknownHeaderData(0x64); }) },
@@ -184,12 +184,12 @@ namespace RatchetLevelEditor.Engine.Deserialization
                 {
                     model.rawData = getModelDataRaw(model.modelType, efs, model.modelID);
                     uint modelHeadSize = BAToUInt32(ReadBlock(efs, model.offset, 4), 0);
-
+                    model.animationsCount = ReadBlock(efs, model.offset + 0x0C, 1)[0];
                     if (modelHeadSize > 0)
                     {
                         byte[] headBlock = ReadBlock(efs, model.offset, modelHeadSize + 0x20); //Head + objectDetails
                         uint objectPtr = BAToUInt32(headBlock, 0);
-                        model.animationsCount = headBlock[0x0C];
+                        //model.animationsCount = headBlock[0x0C];
                         //(0x04)null
                         //(0x08)[count for 0x14 and 0x18][unknown][unknown][unknown]
                         //(0x0c)[animation count][unknown][unknown][unknown]
@@ -982,7 +982,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
             if (pointer != 0 && ReadUInt32(efs, pointer) != 0)
             {
                 //The anims are scattered in a block 0x200 big
-                byte[] playerAnimPointerBlock = ReadBlock(efs, pointer, 0x200);
+                byte[] playerAnimPointerBlock = ReadBlock(efs, pointer, (uint)DataStoreEngine.spawnableModels[0].animationsCount * 0x04);
 
                 for (int i = 0; i < playerAnimPointerBlock.Length; i += 0x04)
                 {
@@ -1083,6 +1083,9 @@ namespace RatchetLevelEditor.Engine.Deserialization
 
                 skyBox.faces.Add(face);
             }
+
+            //Vertexcount was just max ID, and since ID's start at 0 we add 1
+            skyBox.vertexCount++;
 
             byte[] vertBlock = ReadBlock(efs, skyBox.verticesPointer, (uint) skyBox.vertexCount * 0x18);
 
