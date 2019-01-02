@@ -12,7 +12,7 @@ class EngineHeader
     //(0x04)Map render definitions
     //(0x08)null
     //(0x0C)null
-    //(0x10)Skybox
+    public uint skyboxPointer;
     public uint collisionPointer;
     //(0x18)Player animations
     public uint levelModelsPointer;
@@ -60,6 +60,7 @@ class EngineHeader
     {
         byte[] engineHeader = ReadBlock(fs, 0, 0x78);
         spawnablesPointer = BAToUInt32(engineHeader, 0x00);
+        skyboxPointer = BAToUInt32(engineHeader, 0x10);
         collisionPointer = BAToUInt32(engineHeader, 0x14);
         levelModelsPointer = BAToUInt32(engineHeader, 0x1C);
         levelModelsCount = BAToUInt32(engineHeader, 0x20);

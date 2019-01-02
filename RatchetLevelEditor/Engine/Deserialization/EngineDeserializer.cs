@@ -32,8 +32,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
                     break;
                 case 2:
                 case 3:
-                    EngineHeader engineHeader = new EngineHeader(efs, (uint) racNum);
-                    DataStoreEngine.engineHeader = engineHeader;
+                    DataStoreEngine.engineHeader = new EngineHeader(efs, (uint) racNum);
                     headerMap = new Dictionary<int, dynamic>()
                     {
                         //Get the counts of things first, other stuff below relies on these being populated
@@ -1036,7 +1035,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
         #region Sky Box
         public static void deSerializeSkyBox(ref RatchetModel_SkyBox skyBox, int index, int racNum)
         {
-            uint pointer = ReadUInt32(ReadBlock(efs, (uint)index, 4), 0);
+            uint pointer = DataStoreEngine.engineHeader.skyboxPointer;
             skyBox.modelType = ModelType.SkyBox;
             skyBox.layerCount = (int) ReadUInt32(efs, pointer + 0x04);
             skyBox.verticesPointer = ReadUInt32(efs, pointer + 0x14);

@@ -112,15 +112,7 @@ namespace RatchetLevelEditor.Engine.Serialization
                     }
                 }
             }
-            if(!File.Exists(path + "/engineTEST.ps3"))
-            {
-                File.Create(path + "/engineTEST.ps3");
-            }
 
-            if (!File.Exists(path + "/vramTEST.ps3"))
-            {
-                File.Create(path + "/vramTEST.ps3");
-            }
 
             File.WriteAllBytes(path + "/engineTEST.ps3", engine);
             File.WriteAllBytes(path + "/vramTEST.ps3", vram);
@@ -224,8 +216,15 @@ namespace RatchetLevelEditor.Engine.Serialization
 
             byte[] tieModelBlock = new byte[DataStoreEngine.tieModels.Count * 0x40];
             Array.Resize(ref engine, (int)(engine.Length + tieModelBlock.Length));
-            writeBytes(engine, currentOffset, tieModelBlock, tieModelBlock.Length);
 
+            //??
+            //writeBytes(engine, currentOffset, tieModelBlock, tieModelBlock.Length);
+
+            List<byte[]> dataBytes = new List<byte[]>();
+
+
+
+            int dOffset = engine.Length;
             foreach (TieModel tModel in DataStoreEngine.tieModels)
             {
                 byte[] tieHeader = new byte[0x40];
@@ -235,29 +234,24 @@ namespace RatchetLevelEditor.Engine.Serialization
                 WriteFloat(ref tieHeader, 0x08, tModel.ind_08);
                 WriteFloat(ref tieHeader, 0x0C, tModel.ind_0C);
 
-                int dataOffset;
-
                 //Texture Data
-                dataOffset = engine.Length;
-                WriteUint32(ref tieHeader, 0x1C, (uint)dataOffset);
-                Array.Resize(ref engine, (int)(engine.Length + tModel.textureData.Length));
-                writeBytes(engine, dataOffset, tModel.textureData, tModel.textureData.Length);
+                WriteUint32(ref tieHeader, 0x1C, (uint)dOffset);
+                dOffset += tModel.textureData.Length;
+                dataBytes.Add(tModel.textureData);
 
                 //Vertex Data
-                dataOffset = engine.Length;
-                WriteUint32(ref tieHeader, 0x10, (uint) dataOffset);
-                Array.Resize(ref engine, (int)(engine.Length + tModel.vertexData.Length));
-                writeBytes(engine, dataOffset, tModel.vertexData, tModel.vertexData.Length);
+                WriteUint32(ref tieHeader, 0x10, (uint)dOffset);
+                dOffset += tModel.vertexData.Length;
+                dataBytes.Add(tModel.vertexData);
 
-                //UV Data
-                dataOffset = engine.Length;
-                WriteUint32(ref tieHeader, 0x14, (uint)dataOffset);
-                Array.Resize(ref engine, (int)(engine.Length + tModel.uVData.Length));
-                writeBytes(engine, dataOffset, tModel.uVData, tModel.uVData.Length);
+                //UV data
+                WriteUint32(ref tieHeader, 0x14, (uint)dOffset);
+                dOffset += tModel.uVData.Length;
+                dataBytes.Add(tModel.uVData);
+
 
                 //Face Data
-                dataOffset = engine.Length;
-                WriteUint32(ref tieHeader, 0x18, (uint)dataOffset);
+                WriteUint32(ref tieHeader, 0x18, (uint)dOffset);
 
                 int faceSizeNeeded = (int) (tModel.modelData.faceCount) * 2;
                 while (faceSizeNeeded % 0x10 != 0)
@@ -275,17 +269,18 @@ namespace RatchetLevelEditor.Engine.Serialization
                     fPos += 0x06;
                 }
 
-                Array.Resize(ref engine, (int)(engine.Length + faceData.Length));
-                writeBytes(engine, dataOffset, faceData, faceData.Length);
+                dataBytes.Add(faceData);
+                dOffset += faceData.Length;
 
-                uint padding = 0;
+                int padding = 0;
                 while ((engine.Length + padding) % 0x10 != 0)
                 {
                     padding++;
                 }
 
-                Array.Resize(ref engine, (int)(engine.Length + padding));
+                dOffset += padding;
 
+                //Rest of the header
                 WriteUint32(ref tieHeader, 0x20, tModel.ind_20);
                 WriteUint32(ref tieHeader, 0x24, (uint) tModel.vertexCount);
                 WriteUint16(ref tieHeader, 0x28, (ushort) tModel.texCount);
@@ -298,9 +293,25 @@ namespace RatchetLevelEditor.Engine.Serialization
                 WriteUint32(ref tieHeader, 0x38, tModel.ind_38);
                 WriteUint32(ref tieHeader, 0x3C, tModel.rgba);
 
+                //Write header data to engine array
                 writeBytes(engine, currentOffset, tieHeader, tieHeader.Length);
                 currentOffset += 0x40;
+            }
 
+            int offs = engine.Length;
+            Array.Resize(ref engine, dOffset);
+            
+
+            //Write data array to engine array
+            foreach(byte[] data in dataBytes)
+            {
+                writeBytes(engine, offs, data, data.Length);
+                offs += data.Length;
+
+                while ((offs) % 0x10 != 0)
+                {
+                    offs++;
+                }
             }
         }
         #endregion
@@ -316,6 +327,10 @@ namespace RatchetLevelEditor.Engine.Serialization
             byte[] tieBlock = new byte[DataStoreEngine.levelObjects.Count * 0x70];
             Array.Resize(ref engine, (int)(engine.Length + tieBlock.Length));
             writeBytes(engine, currentOffset, tieBlock, tieBlock.Length);
+
+
+            int vertexColorOffset = 0;
+            List<byte[]> vertexColorBlock = new List<byte[]>();
 
             //Write the ties count to the header
             WriteUint32(ref engine, index + 0x04, (uint)DataStoreEngine.levelObjects.Count);
@@ -355,7 +370,7 @@ namespace RatchetLevelEditor.Engine.Serialization
                 WriteUint32(ref tieData, 0x58, tie.off_58);
                 WriteUint32(ref tieData, 0x5C, tie.off_5C);
 
-                WriteUint32(ref tieData, 0x60, (uint) engine.Length);
+                WriteUint32(ref tieData, 0x60, (uint) vertexColorOffset);
                 WriteUint32(ref tieData, 0x64, tie.off_64);
                 WriteUint32(ref tieData, 0x68, tie.off_68);
                 WriteUint32(ref tieData, 0x6C, tie.off_6C);
@@ -366,13 +381,24 @@ namespace RatchetLevelEditor.Engine.Serialization
                     padding++;
                 }
 
-                currentOffset = engine.Length;
+                vertexColorOffset += (int)(tie.vertexColors.Length + padding);
+                vertexColorBlock.Add(tie.vertexColors);
+
+                /*currentOffset = engine.Length;
                 Array.Resize(ref engine, (int)(engine.Length + tie.vertexColors.Length + padding));
-                writeBytes(engine, currentOffset, tie.vertexColors, tie.vertexColors.Length);
+                writeBytes(engine, currentOffset, tie.vertexColors, tie.vertexColors.Length);*/
 
                 writeBytes(engine, tieOffset, tieData, tieData.Length);
                 tieOffset += 0x70;
 
+            }
+            int engineLength = engine.Length;
+            int length = vertexColorBlock.Sum(arr => arr.Length);
+            Array.Resize(ref engine, engineLength + length);
+            foreach(var vertexColor in vertexColorBlock)
+            {
+                vertexColor.CopyTo(engine, engineLength);
+                engineLength += vertexColor.Length;
             }
         }
         #endregion
@@ -390,7 +416,11 @@ namespace RatchetLevelEditor.Engine.Serialization
 
             byte[] shrubModelBlock = new byte[DataStoreEngine.shrubModels.Count * 0x40];
             Array.Resize(ref engine, (int)(engine.Length + shrubModelBlock.Length));
-            writeBytes(engine, currentOffset, shrubModelBlock, shrubModelBlock.Length);
+
+            //writeBytes(engine, currentOffset, shrubModelBlock, shrubModelBlock.Length);
+
+            int dOffset = engine.Length;
+            List<byte[]> dataBytes = new List<byte[]>();
 
             foreach (ShrubModel sModel in DataStoreEngine.shrubModels)
             {
@@ -401,29 +431,22 @@ namespace RatchetLevelEditor.Engine.Serialization
                 WriteFloat(ref shrubHeader, 0x08, sModel.ind_08);
                 WriteFloat(ref shrubHeader, 0x0C, sModel.ind_0C);
 
-                int dataOffset;
 
-                //Texture Data
-                dataOffset = engine.Length;
-                WriteUint32(ref shrubHeader, 0x1C, (uint)dataOffset);
-                Array.Resize(ref engine, (int)(engine.Length + sModel.textureData.Length));
-                writeBytes(engine, dataOffset, sModel.textureData, sModel.textureData.Length);
+                WriteUint32(ref shrubHeader, 0x1C, (uint)dOffset);
+                dOffset += sModel.textureData.Length;
+                dataBytes.Add(sModel.textureData);
 
-                //Vertex Data
-                dataOffset = engine.Length;
-                WriteUint32(ref shrubHeader, 0x10, (uint)dataOffset);
-                Array.Resize(ref engine, (int)(engine.Length + sModel.vertexData.Length));
-                writeBytes(engine, dataOffset, sModel.vertexData, sModel.vertexData.Length);
+                WriteUint32(ref shrubHeader, 0x10, (uint)dOffset);
+                dOffset += sModel.vertexData.Length;
+                dataBytes.Add(sModel.vertexData);
 
-                //UV Data
-                dataOffset = engine.Length;
-                WriteUint32(ref shrubHeader, 0x14, (uint)dataOffset);
-                Array.Resize(ref engine, (int)(engine.Length + sModel.uVData.Length));
-                writeBytes(engine, dataOffset, sModel.uVData, sModel.uVData.Length);
+                WriteUint32(ref shrubHeader, 0x14, (uint)dOffset);
+                dOffset += sModel.uVData.Length;
+                dataBytes.Add(sModel.uVData);
+
 
                 //Index Data
-                dataOffset = engine.Length;
-                WriteUint32(ref shrubHeader, 0x18, (uint)dataOffset);
+                WriteUint32(ref shrubHeader, 0x18, (uint)dOffset);
 
                 int faceSizeNeeded = (int)(sModel.modelData.faceCount) * 2;
                 while (faceSizeNeeded % 0x10 != 0)
@@ -440,17 +463,14 @@ namespace RatchetLevelEditor.Engine.Serialization
                     WriteUint16(ref faceData, (int)fPos + 0x04, (ushort)face.v3);
                     fPos += 0x06;
                 }
+                dOffset += faceData.Length;
+                dataBytes.Add(faceData);
 
-                Array.Resize(ref engine, (int)(engine.Length + faceData.Length));
-                writeBytes(engine, dataOffset, faceData, faceData.Length);
 
-                uint padding = 0;
-                while ((engine.Length + padding) % 0x10 != 0)
+                while ((dOffset) % 0x10 != 0)
                 {
-                    padding++;
+                    dOffset++;
                 }
-
-                Array.Resize(ref engine, (int)(engine.Length + padding));
 
                 WriteUint32(ref shrubHeader, 0x20, sModel.ind_20);
                 WriteUint32(ref shrubHeader, 0x24, (uint)sModel.vertexCount);
@@ -467,6 +487,18 @@ namespace RatchetLevelEditor.Engine.Serialization
                 writeBytes(engine, currentOffset, shrubHeader, shrubHeader.Length);
                 currentOffset += 0x40;
 
+            }
+
+            int offs = engine.Length;
+            Array.Resize(ref engine, dOffset);
+
+            //Write data array to engine array
+            foreach (byte[] data in dataBytes)
+            {
+                writeBytes(engine, offs, data, data.Length);
+                offs += data.Length;
+
+                while ((offs) % 0x10 != 0) { offs++; }
             }
         }
         #endregion
@@ -591,46 +623,58 @@ namespace RatchetLevelEditor.Engine.Serialization
         {
             Console.WriteLine("Serializing Textures");
 
+            int currentOffset = engine.Length;
+
             //Write the count to the header
             WriteUint32(ref engine, index + 0x04, (uint)DataStoreEngine.textures.Count);
+
+            //Resize the engine array to hold the texture headers
+            Array.Resize(ref engine, (int)(engine.Length + DataStoreEngine.textures.Count * 0x24));
+            
+            int vramOffset = 0;
+            List<byte[]> vramBytes = new List<byte[]>();
 
             foreach (RatchetTexture.RatchetTexture_General texture in DataStoreEngine.textures)
             {
                 byte[] textureHeader = new byte[0x24];
 
-                int currentOffset = engine.Length;
-                int vramOffset = vram.Length;
-
                 //Write the vram offset to the texture header
-                WriteUint32(ref textureHeader, 0x00, (uint)vram.Length);
-
-                //Write the current texture data to the vram file
-                Array.Resize(ref vram, (int)(vram.Length + texture.texData.Length));
-                writeBytes(vram, vramOffset, texture.texData, texture.texData.Length);
-
+                WriteUint32(ref textureHeader, 0x00, (uint)vramOffset);
                 WriteUint32(ref textureHeader, 0x04, texture.off_04);
                 WriteUint32(ref textureHeader, 0x08, texture.off_08);
                 WriteUint32(ref textureHeader, 0x0C, texture.off_0C);
+
                 WriteUint32(ref textureHeader, 0x10, texture.off_10);
                 WriteUint32(ref textureHeader, 0x14, texture.off_14);
-
                 WriteUint16(ref textureHeader, 0x18, (ushort) texture.width);
                 WriteUint16(ref textureHeader, 0x1A, (ushort) texture.height);
-
                 WriteUint32(ref textureHeader, 0x1C, texture.off_1C);
+
                 WriteUint32(ref textureHeader, 0x20, texture.off_20);
 
-                uint padding = 0;
-                while ((vram.Length + padding) % 0x10 != 0)
-                {
-                    padding++;
-                }
-
-                Array.Resize(ref vram, (int)(vram.Length + padding));
-
-                Array.Resize(ref engine, (int)(engine.Length + 0x24));
+                //Write the header to the engine file array
                 writeBytes(engine, currentOffset, textureHeader, textureHeader.Length);
+                currentOffset += 0x24;
+
+
+                //Get the correct padding for the vram file
+                uint padding = 0;
+                while ((texture.texData.Length + padding) % 0x10 != 0){ padding++; }
+                vramOffset += (int)(texture.texData.Length + padding);
+
+                //Add the vram data to the vram data list
+                vramBytes.Add(texture.texData);
             }
+
+            //Resize the vram array, and write all the data to it
+            Array.Resize(ref vram, (int)(vram.Length + vramOffset));
+            int ndx = 0;
+            foreach(var vrambyte in vramBytes)
+            {
+                writeBytes(vram, ndx, vrambyte, vrambyte.Length);
+                ndx += vrambyte.Length;
+            }
+            
         }
         #endregion
 
