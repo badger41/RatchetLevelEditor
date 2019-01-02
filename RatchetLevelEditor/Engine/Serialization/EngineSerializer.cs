@@ -255,11 +255,28 @@ namespace RatchetLevelEditor.Engine.Serialization
                 Array.Resize(ref engine, (int)(engine.Length + tModel.uVData.Length));
                 writeBytes(engine, dataOffset, tModel.uVData, tModel.uVData.Length);
 
-                //Index Data
+                //Face Data
                 dataOffset = engine.Length;
                 WriteUint32(ref tieHeader, 0x18, (uint)dataOffset);
-                Array.Resize(ref engine, (int)(engine.Length + tModel.indexData.Length));
-                writeBytes(engine, dataOffset, tModel.indexData, tModel.indexData.Length);
+
+                int faceSizeNeeded = (int) (tModel.modelData.faceCount) * 2;
+                while (faceSizeNeeded % 0x10 != 0)
+                {
+                    faceSizeNeeded++;
+                };
+                byte[] faceData = new byte[faceSizeNeeded];
+
+                uint fPos = 0;
+                foreach (TieModelFace face in tModel.faces)
+                {
+                    WriteUint16(ref faceData, (int)fPos + 0x00, (ushort)face.v1);
+                    WriteUint16(ref faceData, (int)fPos + 0x02, (ushort)face.v2);
+                    WriteUint16(ref faceData, (int)fPos + 0x04, (ushort)face.v3);
+                    fPos += 0x06;
+                }
+
+                Array.Resize(ref engine, (int)(engine.Length + faceData.Length));
+                writeBytes(engine, dataOffset, faceData, faceData.Length);
 
                 uint padding = 0;
                 while ((engine.Length + padding) % 0x10 != 0)
@@ -407,8 +424,25 @@ namespace RatchetLevelEditor.Engine.Serialization
                 //Index Data
                 dataOffset = engine.Length;
                 WriteUint32(ref shrubHeader, 0x18, (uint)dataOffset);
-                Array.Resize(ref engine, (int)(engine.Length + sModel.indexData.Length));
-                writeBytes(engine, dataOffset, sModel.indexData, sModel.indexData.Length);
+
+                int faceSizeNeeded = (int)(sModel.modelData.faceCount) * 2;
+                while (faceSizeNeeded % 0x10 != 0)
+                {
+                    faceSizeNeeded++;
+                };
+                byte[] faceData = new byte[faceSizeNeeded];
+
+                uint fPos = 0;
+                foreach (ShrubModelFace face in sModel.faces)
+                {
+                    WriteUint16(ref faceData, (int)fPos + 0x00, (ushort)face.v1);
+                    WriteUint16(ref faceData, (int)fPos + 0x02, (ushort)face.v2);
+                    WriteUint16(ref faceData, (int)fPos + 0x04, (ushort)face.v3);
+                    fPos += 0x06;
+                }
+
+                Array.Resize(ref engine, (int)(engine.Length + faceData.Length));
+                writeBytes(engine, dataOffset, faceData, faceData.Length);
 
                 uint padding = 0;
                 while ((engine.Length + padding) % 0x10 != 0)

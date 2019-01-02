@@ -55,7 +55,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
                         {0x18, new Action<dynamic>(i => { deSerializePlayerAnims(ref DataStoreEngine.playerAnims, 0x18, racNum); }) },
                         {0x1C, new Action<dynamic>(i => { deSerializeTieModels(ref DataStoreEngine.levelModels, ref DataStoreEngine.tieModels, 0x1C, racNum); }) },
 
-                        {0x2C, new Action<dynamic>(i => { deSerializeShrubModelss(ref DataStoreEngine.sceneryModels, ref DataStoreEngine.shrubModels, 0x2C, racNum); }) },
+                        {0x2C, new Action<dynamic>(i => { deSerializeShrubModels(ref DataStoreEngine.sceneryModels, ref DataStoreEngine.shrubModels, 0x2C, racNum); }) },
                         {0x34, new Action<dynamic>(i => { deSerializeShrubs(ref DataStoreEngine.sceneryObjects, 0x34, racNum); }) },
                         {0x3C, new Action<dynamic>(i => { deSerializeTerrain(ref DataStoreEngine.terrainModel, 0x3C, racNum); }) },
                         {0x40, new Action<dynamic>(i => { getUnknownHeaderData(0x40); }) },
@@ -281,68 +281,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
             {
                 uint offset = (x * levelElemSize);
 
-                TieModel tModel = new TieModel()
-                {
-                    ind_00 = BAToFloat(levelBlock, offset + 0x00),
-                    ind_04 = BAToFloat(levelBlock, offset + 0x04),
-                    ind_08 = BAToFloat(levelBlock, offset + 0x08),
-                    ind_0C = BAToFloat(levelBlock, offset + 0x0C),
 
-                    ptr_vert = BAToUInt32(levelBlock, offset + 0x10),
-                    ptr_uv = BAToUInt32(levelBlock, offset + 0x14),
-                    ptr_ind = BAToUInt32(levelBlock, offset + 0x18),
-                    ptr_tex = BAToUInt32(levelBlock, offset + 0x1C),
-
-                    ind_20 = BAToUInt32(levelBlock, offset + 0x20),
-                    vertexCount = BAToInt32(levelBlock, offset + 0x24),
-                    texCount = BAToShort(levelBlock, offset + 0x28),
-                    ind_2A = BAToShort(levelBlock, offset + 0x2A),
-                    ind_2C = BAToFloat(levelBlock, offset + 0x2C),
-
-                    modelId = BAToShort(levelBlock, offset + 0x30),
-                    ind_32 = BAToShort(levelBlock, offset + 0x32),
-                    ind_34 = BAToUInt32(levelBlock, offset + 0x34),
-                    ind_38 = BAToUInt32(levelBlock, offset + 0x38),
-                    rgba = BAToUInt32(levelBlock, offset + 0x3C),
-
-                };
-
-                tModel.vertexData = ReadBlock(efs, tModel.ptr_vert, tModel.ptr_uv - tModel.ptr_vert);
-                tModel.uVData = ReadBlock(efs, tModel.ptr_uv, tModel.ptr_ind - tModel.ptr_uv);
-                tModel.textureData = ReadBlock(efs, tModel.ptr_tex, tModel.ptr_vert - tModel.ptr_tex);
-                byte[] indexData = new byte[0];
-                ushort compareVertId = 0;
-                int vertOffset = 0;
-                while(compareVertId <= tModel.vertexCount)
-                {
-                    //We have to read an entire line because the comparison is made on 0x02 to determine if we have to stop
-                    byte[] vertexLine = ReadBlock(efs, (uint)(tModel.ptr_ind + (vertOffset * 0x04)), 4);
-
-                    ushort vertexId1 = ReadUInt16(vertexLine, 0);
-                    ushort vertexId2 = ReadUInt16(vertexLine, 2);
-
-                    int currentOffset = indexData.Length;
-                    Array.Resize(ref indexData, indexData.Length + 0x04);
-                    WriteUint16(ref indexData, currentOffset + 0x00, vertexId1);
-                    WriteUint16(ref indexData, currentOffset + 0x02, vertexId2);
-
-                    compareVertId = vertexId2;
-                    //If the id we found matches the count, we peek at the next value to see if its also matching
-                    //If not, we assume that this is the end of the list and we break the loop
-                    if(compareVertId == tModel.vertexCount - 1)
-                    {
-                        byte[] nextVertexLine = ReadBlock(efs, (uint)(tModel.ptr_ind + (vertOffset + 1* 0x04)), 4);
-                        ushort nextVertexId1 = ReadUInt16(nextVertexLine, 0);
-                        ushort nextVertexId2 = ReadUInt16(nextVertexLine, 2);
-
-                        if (nextVertexId2 != compareVertId)
-                            break;
-                    }
-
-                    vertOffset++;
-                }
-
-                tModel.indexData = indexData;
 
                 RatchetModel_General model = new RatchetModel_General();
 
@@ -406,6 +345,50 @@ namespace RatchetLevelEditor.Engine.Deserialization
                     model.indiceBuff.Add(BAToUInt16(indiceBuff, i * sizeof(ushort)));
                 }
 
+                TieModel tModel = new TieModel()
+                {
+                    ind_00 = BAToFloat(levelBlock, offset + 0x00),
+                    ind_04 = BAToFloat(levelBlock, offset + 0x04),
+                    ind_08 = BAToFloat(levelBlock, offset + 0x08),
+                    ind_0C = BAToFloat(levelBlock, offset + 0x0C),
+
+                    ptr_vert = BAToUInt32(levelBlock, offset + 0x10),
+                    ptr_uv = BAToUInt32(levelBlock, offset + 0x14),
+                    ptr_faces = BAToUInt32(levelBlock, offset + 0x18),
+                    ptr_tex = BAToUInt32(levelBlock, offset + 0x1C),
+
+                    ind_20 = BAToUInt32(levelBlock, offset + 0x20),
+                    vertexCount = BAToInt32(levelBlock, offset + 0x24),
+                    texCount = BAToShort(levelBlock, offset + 0x28),
+                    ind_2A = BAToShort(levelBlock, offset + 0x2A),
+                    ind_2C = BAToFloat(levelBlock, offset + 0x2C),
+
+                    modelId = BAToShort(levelBlock, offset + 0x30),
+                    ind_32 = BAToShort(levelBlock, offset + 0x32),
+                    ind_34 = BAToUInt32(levelBlock, offset + 0x34),
+                    ind_38 = BAToUInt32(levelBlock, offset + 0x38),
+                    rgba = BAToUInt32(levelBlock, offset + 0x3C),
+
+                };
+
+                tModel.vertexData = ReadBlock(efs, tModel.ptr_vert, tModel.ptr_uv - tModel.ptr_vert);
+                tModel.uVData = ReadBlock(efs, tModel.ptr_uv, tModel.ptr_faces - tModel.ptr_uv);
+                tModel.textureData = ReadBlock(efs, tModel.ptr_tex, tModel.ptr_vert - tModel.ptr_tex);
+
+                tModel.faces = new List<TieModelFace>();
+                for (int f = 0; f < model.faceCount / 3; f++)
+                {
+                    uint fPointer = (uint)(tModel.ptr_faces + (0x06 * f));
+
+                    TieModelFace face = new TieModelFace();
+                    face.index = f;
+                    face.v1 = (short)ReadUInt16(efs, fPointer);
+                    face.v2 = (short)ReadUInt16(efs, fPointer + 0x02);
+                    face.v3 = (short)ReadUInt16(efs, fPointer + 0x04);
+
+                    tModel.faces.Add(face);
+                }
+
                 levelModels.Add(model);
                 tModel.modelData = model;
                 tieModels.Add(tModel);
@@ -414,6 +397,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
         #endregion
 
         #region Shrub Models
+
         public static void deSerializeShrubModels(ref List<RatchetModel_General> sceneryModels, ref List<ShrubModel> shrubModels, int index, int racNum)
         {
             uint pointer = ReadUInt32(ReadBlock(efs, (uint)index, 4), 0);
@@ -424,198 +408,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
             {
                 uint offset = (x * sceneElemSize);
 
-                ShrubModel shrubModel = new ShrubModel()
-                {
-                    ind_00 = BAToFloat(sceneBlock, offset + 0x00),
-                    ind_04 = BAToFloat(sceneBlock, offset + 0x04),
-                    ind_08 = BAToFloat(sceneBlock, offset + 0x08),
-                    ind_0C = BAToFloat(sceneBlock, offset + 0x0C),
-
-                    ptr_vert = BAToUInt32(sceneBlock, offset + 0x10),
-                    ptr_uv = BAToUInt32(sceneBlock, offset + 0x14),
-                    ptr_ind = BAToUInt32(sceneBlock, offset + 0x18),
-                    ptr_tex = BAToUInt32(sceneBlock, offset + 0x1C),
-
-                    ind_20 = BAToUInt32(sceneBlock, offset + 0x20),
-                    vertexCount = BAToInt32(sceneBlock, offset + 0x24),
-                    texCount = BAToShort(sceneBlock, offset + 0x28),
-                    ind_2A = BAToShort(sceneBlock, offset + 0x2A),
-                    ind_2C = BAToFloat(sceneBlock, offset + 0x2C),
-
-                    modelId = BAToShort(sceneBlock, offset + 0x30),
-                    ind_32 = BAToShort(sceneBlock, offset + 0x32),
-                    ind_34 = BAToUInt32(sceneBlock, offset + 0x34),
-                    ind_38 = BAToUInt32(sceneBlock, offset + 0x38),
-                    rgba = BAToUInt32(sceneBlock, offset + 0x3C),
-
-                };
-
-                shrubModel.vertexData = ReadBlock(efs, shrubModel.ptr_vert, shrubModel.ptr_uv - shrubModel.ptr_vert);
-                shrubModel.uVData = ReadBlock(efs, shrubModel.ptr_uv, shrubModel.ptr_ind - shrubModel.ptr_uv);
-                shrubModel.textureData = ReadBlock(efs, shrubModel.ptr_tex, shrubModel.ptr_vert - shrubModel.ptr_tex);
-                byte[] indexData = new byte[0];
-                ushort compareVertId = 0;
-                int vertOffset = 0;
-                while (compareVertId <= shrubModel.vertexCount)
-                {
-                    //We have to read an entire line because the comparison is made on 0x02 to determine if we have to stop
-                    byte[] vertexLine = ReadBlock(efs, (uint)(shrubModel.ptr_ind + (vertOffset * 0x04)), 4);
-
-                    ushort vertexId1 = ReadUInt16(vertexLine, 0);
-                    ushort vertexId2 = ReadUInt16(vertexLine, 2);
-
-                    int currentOffset = indexData.Length;
-                    Array.Resize(ref indexData, indexData.Length + 0x04);
-                    WriteUint16(ref indexData, currentOffset + 0x00, vertexId1);
-                    WriteUint16(ref indexData, currentOffset + 0x02, vertexId2);
-
-                    compareVertId = vertexId2;
-                    //If the id we found matches the count, we peek at the next value to see if its also matching
-                    //If not, we assume that this is the end of the list and we break the loop
-                    if (compareVertId == shrubModel.vertexCount - 1)
-                    {
-                        byte[] nextVertexLine = ReadBlock(efs, (uint)(shrubModel.ptr_ind + (vertOffset + 1 * 0x04)), 4);
-                        ushort nextVertexId1 = ReadUInt16(nextVertexLine, 0);
-                        ushort nextVertexId2 = ReadUInt16(nextVertexLine, 2);
-
-                        if (nextVertexId2 != compareVertId)
-                            break;
-                    }
-
-                    vertOffset++;
-                }
-
-                shrubModel.indexData = indexData;
-
-                RatchetModel_General model = new RatchetModel_General();
-
-                model.modelType = ModelType.Scenery;
-                model.size = 0.5f;
-
-                uint vertPointer = BAToUInt32(sceneBlock, (x * sceneElemSize) + 0x10);
-                uint UVPointer = BAToUInt32(sceneBlock, (x * sceneElemSize) + 0x14);
-                uint indicePointer = BAToUInt32(sceneBlock, (x * sceneElemSize) + 0x18);
-                uint texPointer = BAToUInt32(sceneBlock, (x * sceneElemSize) + 0x1C);
-                model.vertexCount = (ushort)BAToUInt32(sceneBlock, (x * sceneElemSize) + 0x24);
-                ushort texCount = BAToUInt16(sceneBlock, (x * sceneElemSize) + 0x28);
-                model.modelID = BAToShort(sceneBlock, (x * sceneElemSize) + 0x30);
-
-                uint texElemSize = 0x10;
-                byte[] texBlock = ReadBlock(efs, texPointer, texCount * texElemSize);
-                model.textureConfig = new List<RatchetTexture_Model>();
-                model.faceCount = 0;
-                for (uint t = 0; t < texCount; t++)
-                {
-                    RatchetTexture_Model dlt = new RatchetTexture_Model();
-                    dlt.ID = BAToUInt32(texBlock, (t * texElemSize) + 0x00);
-                    dlt.start = BAToUInt32(texBlock, (t * texElemSize) + 0x04);
-                    dlt.size = BAToUInt32(texBlock, (t * texElemSize) + 0x08);
-                    model.textureConfig.Add(dlt);
-                    model.faceCount += dlt.size;
-                }
-
-                //Flip endianness of vertex array float[vert_x, vert_y, vert_z, norm_x, norm_y, norm_z, uv_u, uv_v, reserved reserved]
-                uint vertElemSize = 0x18;
-                uint vertBuffSize = model.vertexCount * vertElemSize;
-                byte[] vertBlock = ReadBlock(efs, vertPointer, vertBuffSize);
-
-                uint UVElemsize = 0x08;
-                uint UVBuffSize = model.vertexCount * UVElemsize;
-                byte[] UVBlock = ReadBlock(efs, UVPointer, UVBuffSize);
-
-
-                model.vertBuff = new List<float>();
-                for (uint i = 0; i < model.vertexCount; i++)
-                {
-                    model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x00));    //vertx
-                    model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x04));    //verty
-                    model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x08));    //vertz
-                    model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x0C));    //normx
-                    model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x10));    //normy
-                    model.vertBuff.Add(BAToFloat(vertBlock, (i * vertElemSize) + 0x14));    //normz
-
-                    model.vertBuff.Add(BAToFloat(UVBlock, (i * UVElemsize) + 0x00));    //UVu
-                    model.vertBuff.Add(BAToFloat(UVBlock, (i * UVElemsize) + 0x04));    //UVv
-                }
-
-                sceneryModels.Add(model);
-                //shrubModel.modelData = model;
-                //shrubModels.Add(shrubModel);
-            }
-        }
-
-        public static void deSerializeShrubModelss(ref List<RatchetModel_General> sceneryModels, ref List<ShrubModel> shrubModels, int index, int racNum)
-        {
-            uint pointer = ReadUInt32(ReadBlock(efs, (uint)index, 4), 0);
-            uint sceneElemSize = 0x40;
-            byte[] sceneBlock = ReadBlock(efs, pointer, DataStoreEngine.engineHeader.sceneryModelsCount * sceneElemSize);
-
-            for (uint x = 0; x < DataStoreEngine.engineHeader.sceneryModelsCount; x++)
-            {
-                uint offset = (x * sceneElemSize);
-
-                ShrubModel shrubModel = new ShrubModel()
-                {
-                    ind_00 = BAToFloat(sceneBlock, offset + 0x00),
-                    ind_04 = BAToFloat(sceneBlock, offset + 0x04),
-                    ind_08 = BAToFloat(sceneBlock, offset + 0x08),
-                    ind_0C = BAToFloat(sceneBlock, offset + 0x0C),
-
-                    ptr_vert = BAToUInt32(sceneBlock, offset + 0x10),
-                    ptr_uv = BAToUInt32(sceneBlock, offset + 0x14),
-                    ptr_ind = BAToUInt32(sceneBlock, offset + 0x18),
-                    ptr_tex = BAToUInt32(sceneBlock, offset + 0x1C),
-
-                    ind_20 = BAToUInt32(sceneBlock, offset + 0x20),
-                    vertexCount = BAToInt32(sceneBlock, offset + 0x24),
-                    texCount = BAToShort(sceneBlock, offset + 0x28),
-                    ind_2A = BAToShort(sceneBlock, offset + 0x2A),
-                    ind_2C = BAToFloat(sceneBlock, offset + 0x2C),
-
-                    modelId = BAToShort(sceneBlock, offset + 0x30),
-                    ind_32 = BAToShort(sceneBlock, offset + 0x32),
-                    ind_34 = BAToUInt32(sceneBlock, offset + 0x34),
-                    ind_38 = BAToUInt32(sceneBlock, offset + 0x38),
-                    rgba = BAToUInt32(sceneBlock, offset + 0x3C),
-
-                };
-
-                shrubModel.vertexData = ReadBlock(efs, shrubModel.ptr_vert, shrubModel.ptr_uv - shrubModel.ptr_vert);
-                shrubModel.uVData = ReadBlock(efs, shrubModel.ptr_uv, shrubModel.ptr_ind - shrubModel.ptr_uv);
-                shrubModel.textureData = ReadBlock(efs, shrubModel.ptr_tex, shrubModel.ptr_vert - shrubModel.ptr_tex);
-                byte[] indexData = new byte[0];
-                ushort compareVertId = 0;
-                int vertOffset = 0;
-                while (compareVertId <= shrubModel.vertexCount)
-                {
-                    //We have to read an entire line because the comparison is made on 0x02 to determine if we have to stop
-                    byte[] vertexLine = ReadBlock(efs, (uint)(shrubModel.ptr_ind + (vertOffset * 0x04)), 4);
-
-                    ushort vertexId1 = ReadUInt16(vertexLine, 0);
-                    ushort vertexId2 = ReadUInt16(vertexLine, 2);
-
-                    int currentOffset = indexData.Length;
-                    Array.Resize(ref indexData, indexData.Length + 0x04);
-                    WriteUint16(ref indexData, currentOffset + 0x00, vertexId1);
-                    WriteUint16(ref indexData, currentOffset + 0x02, vertexId2);
-
-                    compareVertId = vertexId2;
-                    //If the id we found matches the count, we peek at the next value to see if its also matching
-                    //If not, we assume that this is the end of the list and we break the loop
-                    if (compareVertId == shrubModel.vertexCount - 1)
-                    {
-                        byte[] nextVertexLine = ReadBlock(efs, (uint)(shrubModel.ptr_ind + (vertOffset + 1 * 0x04)), 4);
-                        ushort nextVertexId1 = ReadUInt16(nextVertexLine, 0);
-                        ushort nextVertexId2 = ReadUInt16(nextVertexLine, 2);
-
-                        if (nextVertexId2 != compareVertId)
-                            break;
-                    }
-
-                    vertOffset++;
-                }
-
-                shrubModel.indexData = indexData;
+                
 
                 RatchetModel_General model = new RatchetModel_General();
                 model.modelType = ModelType.Scenery;
@@ -673,6 +466,50 @@ namespace RatchetLevelEditor.Engine.Deserialization
                 for (uint i = 0; i < model.faceCount; i++)
                 {
                     model.indiceBuff.Add(BAToUInt16(indiceBuff, i * sizeof(ushort)));
+                }
+
+                ShrubModel shrubModel = new ShrubModel()
+                {
+                    ind_00 = BAToFloat(sceneBlock, offset + 0x00),
+                    ind_04 = BAToFloat(sceneBlock, offset + 0x04),
+                    ind_08 = BAToFloat(sceneBlock, offset + 0x08),
+                    ind_0C = BAToFloat(sceneBlock, offset + 0x0C),
+
+                    ptr_vert = BAToUInt32(sceneBlock, offset + 0x10),
+                    ptr_uv = BAToUInt32(sceneBlock, offset + 0x14),
+                    ptr_faces = BAToUInt32(sceneBlock, offset + 0x18),
+                    ptr_tex = BAToUInt32(sceneBlock, offset + 0x1C),
+
+                    ind_20 = BAToUInt32(sceneBlock, offset + 0x20),
+                    vertexCount = BAToInt32(sceneBlock, offset + 0x24),
+                    texCount = BAToShort(sceneBlock, offset + 0x28),
+                    ind_2A = BAToShort(sceneBlock, offset + 0x2A),
+                    ind_2C = BAToFloat(sceneBlock, offset + 0x2C),
+
+                    modelId = BAToShort(sceneBlock, offset + 0x30),
+                    ind_32 = BAToShort(sceneBlock, offset + 0x32),
+                    ind_34 = BAToUInt32(sceneBlock, offset + 0x34),
+                    ind_38 = BAToUInt32(sceneBlock, offset + 0x38),
+                    rgba = BAToUInt32(sceneBlock, offset + 0x3C),
+
+                };
+
+                shrubModel.vertexData = ReadBlock(efs, shrubModel.ptr_vert, shrubModel.ptr_uv - shrubModel.ptr_vert);
+                shrubModel.uVData = ReadBlock(efs, shrubModel.ptr_uv, shrubModel.ptr_faces - shrubModel.ptr_uv);
+                shrubModel.textureData = ReadBlock(efs, shrubModel.ptr_tex, shrubModel.ptr_vert - shrubModel.ptr_tex);
+
+                shrubModel.faces = new List<ShrubModelFace>();
+                for (int f = 0; f < model.faceCount / 3; f++)
+                {
+                    uint fPointer = (uint)(shrubModel.ptr_faces + (0x06 * f));
+
+                    ShrubModelFace face = new ShrubModelFace();
+                    face.index = f;
+                    face.v1 = (short)ReadUInt16(efs, fPointer);
+                    face.v2 = (short)ReadUInt16(efs, fPointer + 0x02);
+                    face.v3 = (short)ReadUInt16(efs, fPointer + 0x04);
+
+                    shrubModel.faces.Add(face);
                 }
 
                 sceneryModels.Add(model);
@@ -1144,7 +981,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
             uint pointer = ReadUInt32(ReadBlock(efs, (uint)index, 4), 0);
 
             //MP maps dont have this data
-            if (pointer != 0)
+            if (pointer != 0 && ReadUInt32(efs, pointer) != 0)
             {
                 //The anims are scattered in a block 0x200 big
                 byte[] playerAnimPointerBlock = ReadBlock(efs, pointer, 0x200);

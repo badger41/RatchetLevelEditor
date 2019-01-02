@@ -16,12 +16,11 @@ namespace RatchetLevelEditor.Engine.Models
 
         public uint ptr_vert;
         public uint ptr_uv;
-        public uint ptr_ind;
+        public uint ptr_faces;
         public uint ptr_tex;
 
         public byte[] vertexData;
         public byte[] uVData;
-        public byte[] indexData;
         public byte[] textureData;
 
         public uint ind_20;
@@ -36,8 +35,18 @@ namespace RatchetLevelEditor.Engine.Models
         public uint ind_38;
         public uint rgba;
 
+        public List<ShrubModelFace> faces;
+
         public RatchetModel_General modelData;
 
 
+    }
+
+    class ShrubModelFace
+    {
+        public int index;
+        public short v1;
+        public short v2;
+        public short v3;
     }
 }
