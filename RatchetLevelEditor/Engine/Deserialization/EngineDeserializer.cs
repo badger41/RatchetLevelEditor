@@ -144,6 +144,8 @@ namespace RatchetLevelEditor.Engine.Deserialization
         //We will still need it when serializing the gameplay file later
         public static void getUnknownHeaderData(int index)
         {
+            Console.WriteLine("Parsing unknown data");
+
             uint pointer = ReadUInt32(ReadBlock(efs, (uint)index, 4), 0);
             UnknownDataIndex currentOffset = DataStoreEngine.unhandledOffsets.Where(x => x.pointer == pointer).FirstOrDefault();
             int offsetIndex = DataStoreEngine.unhandledOffsets.IndexOf(currentOffset);
@@ -168,6 +170,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
         #region Spawnable Models
         public static void deSerializeSpawnables(ref List<RatchetModel_General> spawnableModels, int index, int racNum)
         {
+            Console.WriteLine("Parsing moby models");
             uint pointer = BAToUInt32(ReadBlock(efs, (uint)index, 4), 0);
             uint spawnablesCount = BAToUInt32(ReadBlock(efs, pointer, 4), 0);
             byte[] idBlock = ReadBlock(efs, pointer + 4, spawnablesCount * 8);
@@ -271,6 +274,8 @@ namespace RatchetLevelEditor.Engine.Deserialization
         #region Tie Models
         public static void deSerializeTieModels(ref List<RatchetModel_General> levelModels, ref List<TieModel> tieModels, int index, int racNum)
         {
+            Console.WriteLine("Parsing tie models");
+            
             uint pointer = ReadUInt32(ReadBlock(efs, (uint)index, 4), 0);
             uint levelElemSize = 0x40;
             byte[] levelBlock = ReadBlock(efs, pointer, DataStoreEngine.engineHeader.levelModelsCount * levelElemSize);
@@ -398,6 +403,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
 
         public static void deSerializeShrubModels(ref List<RatchetModel_General> sceneryModels, ref List<ShrubModel> shrubModels, int index, int racNum)
         {
+            Console.WriteLine("Parsing shrub models");
             uint pointer = ReadUInt32(ReadBlock(efs, (uint)index, 4), 0);
             uint sceneElemSize = 0x40;
             byte[] sceneBlock = ReadBlock(efs, pointer, DataStoreEngine.engineHeader.sceneryModelsCount * sceneElemSize);
@@ -520,6 +526,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
         #region Terrain Mesh
         public static void deSerializeTerrain(ref RatchetModel_Terrain terrainModel, int index, int racNum)
         {
+            Console.WriteLine("Parsing terrain mesh");
             uint pointer = ReadUInt32(ReadBlock(efs, (uint)index, 4), 0);
             uint terrainElemSize = 0x30;
             uint texElemSize = 0x10;
@@ -548,6 +555,8 @@ namespace RatchetLevelEditor.Engine.Deserialization
             uint prevHeadCount = 0;
             uint prevPrevFaceCount = 0;
 
+            uint totalFaceCount = 0;
+
             for (uint i = 0; i < 4; i++)   //I have yet to see any level have more than two of these, but the header theoretically has space for 4
             {
                 uint vertPointer = BAToUInt32(terrainHeadBlock, (i * sizeof(uint)) + 0x08);
@@ -561,6 +570,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
                     //Loop throught the heads, and stop when the overflow counter increases
                     for (uint ii = prevHeadCount; ii < headCount && i == BAToUInt16(terrainBlock, (ii * terrainElemSize) + 0x22); ii++)
                     {
+                        
                         uint localFaceCount = 0;
                         uint texPointer = BAToUInt32(terrainBlock, (ii * terrainElemSize) + 0x10);
                         uint texCount = BAToUInt32(terrainBlock, (ii * terrainElemSize) + 0x14);
@@ -612,9 +622,11 @@ namespace RatchetLevelEditor.Engine.Deserialization
                     prevVertCount = vertCount;
                     prevPrevFaceCount = prevFaceCount;
                 }
+
+                totalFaceCount += prevFaceCount;
             }
             model.vertexCount = vertCount;
-            model.faceCount = prevFaceCount;
+            model.faceCount = totalFaceCount;
 
             uint headPtr = ReadUInt32(terrainHeadBlock, 0x00);
             uint uptr_1 = ReadUInt32(terrainHeadBlock, 0x08);
@@ -627,49 +639,17 @@ namespace RatchetLevelEditor.Engine.Deserialization
             model.unknownBlock1 = ReadBlock(efs, uptr_1, uptr_2 - uptr_1);
             model.unknownBlock2 = ReadBlock(efs, uptr_2, uptr_3 - uptr_2);
             model.unknownBlock3 = ReadBlock(efs, uptr_3, vertIndices - uptr_3);
-
-
-            byte[] indexData = new byte[0];
-            ushort compareVertId = 0;
-            int vertOffset = 0;
-            while (compareVertId <= model.vertexCount)
-            {
-                //We have to read an entire line because the comparison is made on 0x02 to determine if we have to stop
-                byte[] vertexLine = ReadBlock(efs, (uint)(vertIndices + (vertOffset * 0x04)), 4);
-
-                ushort vertexId1 = ReadUInt16(vertexLine, 0);
-                ushort vertexId2 = ReadUInt16(vertexLine, 2);
-
-                int currentOffset = indexData.Length;
-                Array.Resize(ref indexData, indexData.Length + 0x04);
-                WriteUint16(ref indexData, currentOffset + 0x00, vertexId1);
-                WriteUint16(ref indexData, currentOffset + 0x02, vertexId2);
-
-                compareVertId = vertexId2;
-                //If the id we found matches the count, we peek at the next value to see if its also matching
-                //If not, we assume that this is the end of the list and we break the loop
-                if (compareVertId == model.vertexCount - 1)
-                {
-                    byte[] nextVertexLine = ReadBlock(efs, (uint)(vertIndices + (vertOffset + 1 * 0x04)), 4);
-                    ushort nextVertexId1 = ReadUInt16(nextVertexLine, 0);
-                    ushort nextVertexId2 = ReadUInt16(nextVertexLine, 2);
-
-                    if (nextVertexId2 != compareVertId)
-                        break;
-                }
-
-                vertOffset++;
-            }
-
-            model.vertexIndices = indexData;
+            model.vertexIndices = ReadBlock(efs, (uint)vertIndices, totalFaceCount * 2);
 
             terrainModel = model;
+            
         }
         #endregion
 
         #region Ties
         public static void deSerializeTies(ref List<LevelObject> ties, int index, int racNum)
         {
+            Console.WriteLine("Parsing tie instances");
             uint pointer = ReadUInt32(ReadBlock(efs, (uint)index, 4), 0);
             uint tieSize = 0x70;
             byte[] levelObjectBlock = ReadBlock(efs, pointer, DataStoreEngine.engineHeader.levelObjectCount * 0x70);
@@ -729,6 +709,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
         #region Shrubs
         public static void deSerializeShrubs(ref List<LevelObject> shrubs, int index, int racNum)
         {
+            Console.WriteLine("Parsing shrub instances");
             uint pointer = ReadUInt32(ReadBlock(efs, (uint)index, 4), 0);
             uint shrubSize = 0x70;
             byte[] levelObjectBlock = ReadBlock(efs, pointer, DataStoreEngine.engineHeader.sceneryObjectsCount * 0x70);
@@ -815,6 +796,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
         #region Terrain Collision
         public static void deSerializeTerrainCollision(ref List<float> collisionVertexBuff, ref List<uint> collisionIndiceBuff, int index, int racNum)
         {
+            Console.WriteLine("Parsing collision");
             uint pointer = ReadUInt32(ReadBlock(efs, (uint)index, 4), 0);
             byte[] engineHeader = ReadBlock(efs, 0, 0x80);
             uint nextPointer = FindNextLargest(engineHeader, index);
@@ -976,6 +958,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
         #region Campaign Player Anims
         public static void deSerializePlayerAnims(ref List<RatchetPlayerAnimation> playerAnims, int index, int racNum)
         {
+            Console.WriteLine("Parsing player animations");
             uint pointer = ReadUInt32(ReadBlock(efs, (uint)index, 4), 0);
 
             //MP maps dont have this data
@@ -1035,6 +1018,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
         #region Sky Box
         public static void deSerializeSkyBox(ref RatchetModel_SkyBox skyBox, int index, int racNum)
         {
+            Console.WriteLine("Parsing skybox");
             uint pointer = DataStoreEngine.engineHeader.skyboxPointer;
             skyBox.modelType = ModelType.SkyBox;
             skyBox.layerCount = (int) ReadUInt32(efs, pointer + 0x04);
