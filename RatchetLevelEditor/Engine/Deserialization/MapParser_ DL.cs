@@ -708,7 +708,7 @@ namespace RatchetLevelEditor
             DataStoreEngine.mapRenderDefintions = getSection(fs, 0x04);
             DataStoreEngine.enginePtr_08 = getSection(fs, 0x08);
             DataStoreEngine.enginePtr_0C = getSection(fs, 0x0C);
-            DataStoreEngine.skyBox = getSection(fs, 0x14);
+            //DataStoreEngine.skyBox = getSection(fs, 0x14);
             DataStoreEngine.collisionMap = getSection(fs, 0x18);
             DataStoreEngine.enginePtr_44 = getSection(fs, 0x44);
             DataStoreEngine.soundsConfig = getSection(fs, 0x54);

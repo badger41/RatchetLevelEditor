@@ -37,7 +37,7 @@ namespace RatchetLevelEditor.Engine.Serialization
                         {0x04, new Action<dynamic>(i => { serializeUnknownHeaderData(0x04); }) },
                         {0x08, new Action<dynamic>(i => { serializeUnknownHeaderData(0x08); }) },
                         {0x0C, new Action<dynamic>(i => { serializeUnknownHeaderData(0x0C); }) },
-                        {0x10, new Action<dynamic>(i => { serializeUnknownHeaderData(0x10); }) },
+                        {0x10, new Action<dynamic>(i => { serializeSkyBox(ref engine, 0x10, racNum); }) },
                         {0x14, new Action<dynamic>(i => { serializeTerrainCollision(ref engine, 0x14, racNum); }) },
                         {0x18, new Action<dynamic>(i => { serializePlayerAnims(ref engine, 0x18, racNum); }) },
                         {0x1C, new Action<dynamic>(i => { serializeTieModels(ref engine, 0x1C, racNum); }) },
@@ -131,14 +131,14 @@ namespace RatchetLevelEditor.Engine.Serialization
 
         public static void serializeUnknownHeaderData(int index)
         {
-            Console.WriteLine(index);
+            Console.WriteLine("Serializing Unhandled Data - 0x" + index.ToString("X"));
+
             int currentOffset = engine.Length;
             uint padding = 0;
             UnknownDataModel model = DataStoreEngine.unknownEngineData.Where(x => x.index == index).Select(x => x).FirstOrDefault();
 
             if (model != null)
             {
-                Console.WriteLine(model == null);
                 while ((model.data.Length + padding) % 0x10 != 0)
                 padding++;
 
@@ -154,6 +154,8 @@ namespace RatchetLevelEditor.Engine.Serialization
         #region Spawnable Models
         public static void serializeSpawnables(ref byte[] engineData, int index, int racNum)
         {
+            Console.WriteLine("Serializing Moby Models");
+
             int currentOffset = engine.Length;
             int modelsCount = DataStoreEngine.spawnableModels.Count;
 
@@ -201,6 +203,8 @@ namespace RatchetLevelEditor.Engine.Serialization
         #region Terrain Collision
         public static void serializeTerrainCollision(ref byte[] engineData, int index, int racNum)
         {
+            Console.WriteLine("Serializing Terrain Collision");
+
             int currentOffset = engine.Length;
             Array.Resize(ref engine, (int)(engine.Length + DataStoreEngine.collisionDataRaw.Length));
             writeBytes(engine, currentOffset, DataStoreEngine.collisionDataRaw, DataStoreEngine.collisionDataRaw.Length);
@@ -210,6 +214,8 @@ namespace RatchetLevelEditor.Engine.Serialization
         #region Tie Models
         public static void serializeTieModels(ref byte[] engineData, int index, int racNum)
         {
+            Console.WriteLine("Serializing Tie Models");
+
             int currentOffset = engine.Length;
             int modelsCount = DataStoreEngine.levelModels.Count;
 
@@ -285,6 +291,8 @@ namespace RatchetLevelEditor.Engine.Serialization
         #region Ties
         public static void serializeTies(ref byte[] engine, int index, int racNum)
         {
+            Console.WriteLine("Serializing Ties");
+
             int currentOffset = engine.Length;
             int tieOffset = engine.Length;
 
@@ -355,6 +363,8 @@ namespace RatchetLevelEditor.Engine.Serialization
         #region Shrub Models
         public static void serializeShrubModels(ref byte[] engineData, int index, int racNum)
         {
+            Console.WriteLine("Serializing Shrub Models");
+
             int currentOffset = engine.Length;
             int modelsCount = DataStoreEngine.sceneryModels.Count;
 
@@ -430,6 +440,8 @@ namespace RatchetLevelEditor.Engine.Serialization
         #region Shrubs
         public static void serializeShrubs(ref byte[] engine, int index, int racNum)
         {
+            Console.WriteLine("Serializing Shrubs");
+
             int currentOffset = engine.Length;
             int shrubOffset = engine.Length;
 
@@ -490,6 +502,8 @@ namespace RatchetLevelEditor.Engine.Serialization
         #region Terrain Mesh
         public static void serializeTerrain(ref byte[] engine, int index, int racNum)
         {
+            Console.WriteLine("Serializing Terrain");
+
             int currentOffset = engine.Length;
             int terrainOffset = engine.Length;
 
@@ -541,6 +555,8 @@ namespace RatchetLevelEditor.Engine.Serialization
         #region Textures
         public static void serializeTextures(ref byte[] engine, ref byte[] vram, int index, int racNum)
         {
+            Console.WriteLine("Serializing Textures");
+
             //Write the count to the header
             WriteUint32(ref engine, index + 0x04, (uint)DataStoreEngine.textures.Count);
 
@@ -587,6 +603,8 @@ namespace RatchetLevelEditor.Engine.Serialization
         #region Level Lighting
         public static void serializeLevelLighting(int index)
         {
+            Console.WriteLine("Serializing Lighting");
+
             //Write the lighting level
             WriteUint32(ref engine, index + 0x04, DataStoreEngine.engineHeader.lightingLevel);
 
@@ -596,7 +614,6 @@ namespace RatchetLevelEditor.Engine.Serialization
 
             if (model != null)
             {
-                Console.WriteLine(model == null);
                 while ((model.data.Length + padding) % 0x10 != 0)
                     padding++;
 
@@ -613,6 +630,8 @@ namespace RatchetLevelEditor.Engine.Serialization
         #region Menu Texture Config
         public static void serializeMenuTextureConfig(int index)
         {
+            Console.WriteLine("Serializing Menu Texture Config");
+
             //Write the lighting level
             WriteUint32(ref engine, index + 0x04, DataStoreEngine.engineHeader.textureConfigMenuCount);
 
@@ -639,6 +658,8 @@ namespace RatchetLevelEditor.Engine.Serialization
         #region Campaign Player Animations
         public static void serializePlayerAnims(ref byte[] engine, int index, int racNum)
         {
+            Console.WriteLine("Serializing Campaign Player Animations");
+
             int currentOffset = engine.Length;
             int playerAnimPointerBlockOffset = engine.Length;
             byte[] playerAnimPointerBlock = new byte[0x200];
@@ -664,5 +685,97 @@ namespace RatchetLevelEditor.Engine.Serialization
             writeBytes(engine, playerAnimPointerBlockOffset, playerAnimPointerBlock, playerAnimPointerBlock.Length);
         }
         #endregion
+
+        #region Sky Box
+        public static void serializeSkyBox(ref byte[] engine, int index, int racNum)
+        {
+            Console.WriteLine("Serializing Skybox");
+
+            int currentOffset = engine.Length;
+
+            SkyBox skyBox = DataStoreEngine.skyBox;
+            int headerSizeNeeded = 0x1C + (0x04 * skyBox.layerCount);
+            while(headerSizeNeeded % 0x10 != 0)
+            {
+                headerSizeNeeded++;
+            };
+
+            byte[] header = new byte[headerSizeNeeded];
+
+            WriteUint32(ref header, 0x04, (uint) skyBox.layerCount);
+
+            int layerIndex = 0;
+            foreach(SkyBoxLayer layer in skyBox.layers)
+            {
+                byte[] layerData = new byte[0x10 + (0x10 * layer.textureCount)];
+                WriteUint16(ref layerData, 0x00, (ushort) layer.off_00);
+                WriteUint16(ref layerData, 0x02, (ushort) layer.textureCount);
+
+                uint tPos = 0;
+                foreach(SkyBoxTexture texture in layer.textures)
+                {
+                    WriteUint32(ref layerData, (int) (0x10 + tPos + 0x00), (uint) texture.textureId);
+                    WriteUint32(ref layerData, (int) (0x10 + tPos + 0x04), (uint) texture.faceOffset);
+                    WriteUint32(ref layerData, (int) (0x10 + tPos + 0x08), (uint) texture.faceCount);
+                    tPos += 0x10;
+                }
+
+                int layerOffset = header.Length;
+                Array.Resize(ref header, header.Length + layerData.Length);
+                writeBytes(header, layerOffset, layerData, layerData.Length);
+                WriteUint32(ref header, 0x1C + (0x04 * layerIndex), (uint)(engine.Length + layerOffset));
+                layerIndex++;
+            }
+
+            int vertexSizeNeeded = skyBox.vertexCount * 0x18;
+            while (vertexSizeNeeded % 0x10 != 0)
+            {
+                vertexSizeNeeded++;
+            };
+            byte[] vertexData = new byte[vertexSizeNeeded];
+
+            uint vPos = 0;
+            foreach(SkyBoxVertex vertex in skyBox.vertices)
+            {
+                WriteFloat(ref vertexData, (int) (vPos + 0x00), vertex.x);
+                WriteFloat(ref vertexData, (int) (vPos + 0x04), vertex.y);
+                WriteFloat(ref vertexData, (int) (vPos + 0x08), vertex.z);
+                WriteFloat(ref vertexData, (int) (vPos + 0x0C), vertex.uvu);
+                WriteFloat(ref vertexData, (int) (vPos + 0x10), vertex.uvv);
+                WriteUint32(ref vertexData, (int)(vPos + 0x14), (uint) vertex.rgba);
+                vPos += 0x18;
+            }
+
+            int vertexDataOffset = header.Length;
+            WriteUint32(ref header, 0x14, (uint)(engine.Length + vertexDataOffset));
+            Array.Resize(ref header, header.Length + vertexData.Length);
+            writeBytes(header, vertexDataOffset, vertexData, vertexData.Length);
+
+            int faceSizeNeeded = skyBox.faceCount * 2;
+            while (faceSizeNeeded % 0x10 != 0)
+            {
+                faceSizeNeeded++;
+            };
+            byte[] faceData = new byte[faceSizeNeeded];
+
+            uint fPos = 0;
+            foreach(SkyBoxFace face in skyBox.faces)
+            {
+                WriteUint16(ref faceData, (int) fPos + 0x00, (ushort) face.v1);
+                WriteUint16(ref faceData, (int) fPos + 0x02, (ushort) face.v2);
+                WriteUint16(ref faceData, (int) fPos + 0x04, (ushort) face.v3);
+                fPos += 0x06;
+            }
+
+            int faceDataOffset = header.Length;
+            WriteUint32(ref header, 0x18, (uint)(engine.Length + faceDataOffset));
+            Array.Resize(ref header, header.Length + faceData.Length);
+            writeBytes(header, faceDataOffset, faceData, faceData.Length);
+
+
+            Array.Resize(ref engine, engine.Length + header.Length);
+            writeBytes(engine, currentOffset, header, header.Length);
+        }
+        #endregion;
     }
 }

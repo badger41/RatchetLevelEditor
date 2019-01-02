@@ -19,7 +19,7 @@ namespace RatchetLevelEditor.Engine
         /* Universal between the different ratchet games */
         public static EngineHeader engineHeader;
         public static byte[] mapRenderDefintions;
-        public static byte[] skyBox;
+        public static SkyBox skyBox = new SkyBox();
         public static byte[] collisionMap;
         public static byte[] soundsConfig;
         public static byte[] lighting;

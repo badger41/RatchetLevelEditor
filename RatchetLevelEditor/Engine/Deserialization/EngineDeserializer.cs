@@ -50,7 +50,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
                         {0x04, new Action<dynamic>(i => { getUnknownHeaderData(0x04); }) },
                         {0x08, new Action<dynamic>(i => { getUnknownHeaderData(0x08); }) },
                         {0x0C, new Action<dynamic>(i => { getUnknownHeaderData(0x0C); }) },
-                        {0x10, new Action<dynamic>(i => { getUnknownHeaderData(0x10); }) },
+                        {0x10, new Action<dynamic>(i => { deSerializeSkyBox(ref DataStoreEngine.skyBox, 0x10, racNum); }) },
                         {0x14, new Action<dynamic>(i => { deSerializeTerrainCollision(ref DataStoreEngine.collVertBuff, ref DataStoreEngine.collIndBuff, 0x14, racNum); }) },
                         {0x18, new Action<dynamic>(i => { deSerializePlayerAnims(ref DataStoreEngine.playerAnims, 0x18, racNum); }) },
                         {0x1C, new Action<dynamic>(i => { deSerializeTieModels(ref DataStoreEngine.levelModels, ref DataStoreEngine.tieModels, 0x1C, racNum); }) },
@@ -1194,6 +1194,76 @@ namespace RatchetLevelEditor.Engine.Deserialization
                     playerAnims.Add(anim);
                 }
             }
+        }
+        #endregion
+
+        #region Sky Box
+        public static void deSerializeSkyBox(ref SkyBox skyBox, int index, int racNum)
+        {
+            uint pointer = ReadUInt32(ReadBlock(efs, (uint)index, 4), 0);
+            skyBox.layerCount = (int) ReadUInt32(efs, pointer + 0x04);
+            skyBox.verticesPointer = ReadUInt32(efs, pointer + 0x14);
+            skyBox.facesPointer = ReadUInt32(efs, pointer + 0x18);
+
+            skyBox.layers = new List<SkyBoxLayer>();
+            skyBox.faces = new List<SkyBoxFace>();
+            skyBox.vertices = new List<SkyBoxVertex>();
+
+            for (int i = 0; i < skyBox.layerCount; i++)
+            {
+                SkyBoxLayer layer = new SkyBoxLayer();
+                layer.textures = new List<SkyBoxTexture>();
+                layer.pointer = ReadUInt32(efs, (uint) (pointer + 0x1C + (0x04 * i)));
+                layer.off_00 = (short)ReadUInt16(efs, (uint)(layer.pointer));
+                layer.textureCount = (short) ReadUInt16(efs, (uint)(layer.pointer + 0x02));
+
+                for (int t = 0; t < layer.textureCount; t++)
+                {
+                    SkyBoxTexture tex = new SkyBoxTexture();
+                    tex.textureId = (int) ReadUInt32(efs, (uint)((layer.pointer + 0x10) + (0x10 * t)));
+                    tex.faceOffset = ReadUInt32(efs, (uint)((layer.pointer + 0x14) + (0x10 * t)));
+                    tex.faceCount = (int)ReadUInt32(efs, (uint)((layer.pointer + 0x18) + (0x10 * t)));
+
+                    layer.textures.Add(tex);
+
+                    skyBox.faceCount += tex.faceCount;
+                }
+
+                skyBox.layers.Add(layer);
+            }
+
+            for (int f = 0; f < skyBox.faceCount/3; f++)
+            {
+                uint fPointer = (uint)(skyBox.facesPointer + (0x06 * f));
+
+                SkyBoxFace face = new SkyBoxFace();
+                face.index = f;
+                face.v1 = (short)ReadUInt16(efs, fPointer);
+                face.v2 = (short)ReadUInt16(efs, fPointer + 0x02);
+                face.v3 = (short)ReadUInt16(efs, fPointer + 0x04);
+                skyBox.vertexCount = (face.v1 > skyBox.vertexCount ? face.v1 : skyBox.vertexCount);
+                skyBox.vertexCount = (face.v2 > skyBox.vertexCount ? face.v2 : skyBox.vertexCount);
+                skyBox.vertexCount = (face.v3 > skyBox.vertexCount ? face.v3 : skyBox.vertexCount);
+
+                skyBox.faces.Add(face);
+            }
+
+            byte[] vertBlock = ReadBlock(efs, skyBox.verticesPointer, (uint) skyBox.vertexCount * 0x18);
+
+            for (int v = 0; v < skyBox.vertexCount; v++)
+            {
+                SkyBoxVertex vertex = new SkyBoxVertex();
+
+                vertex.x = BAToFloat(vertBlock, (uint) (v * 0x18) + 0x00);
+                vertex.y = BAToFloat(vertBlock, (uint) (v * 0x18) + 0x04);
+                vertex.z = BAToFloat(vertBlock, (uint) (v * 0x18) + 0x08);
+                vertex.uvu = BAToFloat(vertBlock, (uint)(v * 0x18) + 0x0C);
+                vertex.uvv = BAToFloat(vertBlock, (uint)(v * 0x18) + 0x10);
+                vertex.rgba = BAToInt32(vertBlock, (uint)(v * 0x18) + 0x14);
+
+                skyBox.vertices.Add(vertex);
+            }
+
         }
         #endregion
     }

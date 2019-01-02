@@ -121,6 +121,7 @@
     <Compile Include="Engine\Models\EngineHeader.cs" />
     <Compile Include="Engine\Models\RatchetPlayerAnimation.cs" />
     <Compile Include="Engine\Models\ShrubModel.cs" />
+    <Compile Include="Engine\Models\SkyBox.cs" />
     <Compile Include="Engine\Models\TieModel.cs" />
     <Compile Include="Engine\Serialization\EngineSerializer.cs" />
     <Compile Include="Gameplay\DataStoreGameplay.cs" />

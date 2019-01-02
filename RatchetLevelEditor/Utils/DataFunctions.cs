@@ -307,6 +307,20 @@ using System.Threading.Tasks;
 
         return (uint)((ret[0] << 24) | (ret[1] << 16) | (ret[2] << 8) | (ret[3] << 0));
     }
+    public static uint ReadUInt16(FileStream fs, uint offset)
+    {
+        byte[] ret = new byte[2];
+
+        try
+        {
+            if (fs.Position != offset)
+                fs.Seek(offset, SeekOrigin.Begin);
+            fs.Read(ret, 0, (int)2);
+        }
+        catch { return 0; }
+
+        return (uint)((ret[0] << 8) | (ret[1] << 0));
+    }
     public static uint ReadUInt32(byte[] a, int offset)
     {
         return (uint)((a[offset + 0] << 24) | (a[offset + 1] << 16) | (a[offset + 2] << 8) | (a[offset + 3] << 0));
