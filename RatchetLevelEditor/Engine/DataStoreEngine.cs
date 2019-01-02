@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static RatchetModel;
 using static RatchetTexture;
 
 namespace RatchetLevelEditor.Engine
@@ -19,7 +18,7 @@ namespace RatchetLevelEditor.Engine
         /* Universal between the different ratchet games */
         public static EngineHeader engineHeader;
         public static byte[] mapRenderDefintions;
-        public static SkyBox skyBox = new SkyBox();
+        public static RatchetModel_SkyBox skyBox = new RatchetModel_SkyBox();
         public static byte[] collisionMap;
         public static byte[] soundsConfig;
         public static byte[] lighting;

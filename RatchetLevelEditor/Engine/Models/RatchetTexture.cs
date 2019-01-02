@@ -30,8 +30,8 @@ public class RatchetTexture
     //Used specifically in model loading
     public struct RatchetTexture_Model
     {
-        public uint ID;
-        public uint start;//
-        public uint size;
+        public uint textureId;
+        public uint faceOffset;//
+        public uint faceCount;
     };
 }

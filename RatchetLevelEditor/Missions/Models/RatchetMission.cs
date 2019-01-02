@@ -1,9 +1,9 @@
-﻿using System;
+﻿using RatchetLevelEditor.Engine.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static RatchetModel;
 using static RatchetTexture;
 
 namespace RatchetLevelEditor

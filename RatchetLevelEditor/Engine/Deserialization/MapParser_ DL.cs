@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static DataFunctions;
-using static RatchetModel;
 using static RatchetTexture;
 using RatchetLevelEditor.Engine;
 using RatchetLevelEditor.Gameplay;
+using RatchetLevelEditor.Engine.Models;
 
 namespace RatchetLevelEditor
 {
@@ -187,11 +187,11 @@ namespace RatchetLevelEditor
                         for (uint t = 0; t < texCount; t++)
                         {
                             RatchetTexture_Model modTex = new RatchetTexture_Model();
-                            modTex.ID =     BAToUInt32(texBlock, (t * texElemSize) + 0x0);
-                            modTex.start =  BAToUInt32(texBlock, (t * texElemSize) + 0x04);
-                            modTex.size =   BAToUInt32(texBlock, (t * texElemSize) + 0x08);
+                            modTex.textureId =     BAToUInt32(texBlock, (t * texElemSize) + 0x0);
+                            modTex.faceOffset =  BAToUInt32(texBlock, (t * texElemSize) + 0x04);
+                            modTex.faceCount =   BAToUInt32(texBlock, (t * texElemSize) + 0x08);
                             model.textureConfig.Add(modTex);
-                            model.faceCount += modTex.size;
+                            model.faceCount += modTex.faceCount;
                         }
 
 
@@ -256,11 +256,11 @@ namespace RatchetLevelEditor
                 for (uint t = 0; t < texCount; t++)
                 {
                     RatchetTexture_Model dlt = new RatchetTexture_Model();
-                    dlt.ID =    BAToUInt32(texBlock, (t * texElemSize) + 0x00);
-                    dlt.start = BAToUInt32(texBlock, (t * texElemSize) + 0x08);
-                    dlt.size =  BAToUInt32(texBlock, (t * texElemSize) + 0x0C);
+                    dlt.textureId =    BAToUInt32(texBlock, (t * texElemSize) + 0x00);
+                    dlt.faceOffset = BAToUInt32(texBlock, (t * texElemSize) + 0x08);
+                    dlt.faceCount =  BAToUInt32(texBlock, (t * texElemSize) + 0x0C);
                     model.textureConfig.Add(dlt);
-                    model.faceCount += dlt.size;
+                    model.faceCount += dlt.faceCount;
                 }
                 
                 //Flip endianness of vertex array float[vert_x, vert_y, vert_z, norm_x, norm_y, norm_z, uv_u, uv_v, reserved reserved]
@@ -325,11 +325,11 @@ namespace RatchetLevelEditor
                 for (uint t = 0; t < texCount; t++)
                 {
                     RatchetTexture_Model dlt = new RatchetTexture_Model();
-                    dlt.ID = BAToUInt32(texBlock, (t * texElemSize) + 0x00);
-                    dlt.start = BAToUInt32(texBlock, (t * texElemSize) + 0x04);
-                    dlt.size = BAToUInt32(texBlock, (t * texElemSize) + 0x08);
+                    dlt.textureId = BAToUInt32(texBlock, (t * texElemSize) + 0x00);
+                    dlt.faceOffset = BAToUInt32(texBlock, (t * texElemSize) + 0x04);
+                    dlt.faceCount = BAToUInt32(texBlock, (t * texElemSize) + 0x08);
                     model.textureConfig.Add(dlt);
-                    model.faceCount += dlt.size;
+                    model.faceCount += dlt.faceCount;
                 }
 
                 //Flip endianness of vertex array float[vert_x, vert_y, vert_z, norm_x, norm_y, norm_z, uv_u, uv_v, reserved reserved]
@@ -421,9 +421,9 @@ namespace RatchetLevelEditor
                             for (uint iii = 0; iii < texCount; iii++)
                             {
                                 RatchetTexture_Model tex = new RatchetTexture_Model();
-                                tex.ID =        BAToUInt32(texBlock, (iii * texElemSize) + 0x00);
-                                tex.start =     BAToUInt32(texBlock, (iii * texElemSize) + 0x04) + prevPrevFaceCount;
-                                tex.size =      BAToUInt32(texBlock, (iii * texElemSize) + 0x08) + prevPrevFaceCount;
+                                tex.textureId =        BAToUInt32(texBlock, (iii * texElemSize) + 0x00);
+                                tex.faceOffset =     BAToUInt32(texBlock, (iii * texElemSize) + 0x04) + prevPrevFaceCount;
+                                tex.faceCount =      BAToUInt32(texBlock, (iii * texElemSize) + 0x08) + prevPrevFaceCount;
                                 localFaceCount +=    BAToUInt32(texBlock, (iii * texElemSize) + 0x08);
                                 model.textureConfig.Add(tex);
                             }
@@ -538,9 +538,9 @@ namespace RatchetLevelEditor
                             for (uint iii = 0; iii < texCount; iii++)
                             {
                                 RatchetTexture_Model tex = new RatchetTexture_Model();
-                                tex.ID = BAToUInt32(texBlock, (iii * texElemSize) + 0x00);
-                                tex.start = BAToUInt32(texBlock, (iii * texElemSize) + 0x04) + prevPrevFaceCount;
-                                tex.size = BAToUInt32(texBlock, (iii * texElemSize) + 0x08) + prevPrevFaceCount;
+                                tex.textureId = BAToUInt32(texBlock, (iii * texElemSize) + 0x00);
+                                tex.faceOffset = BAToUInt32(texBlock, (iii * texElemSize) + 0x04) + prevPrevFaceCount;
+                                tex.faceCount = BAToUInt32(texBlock, (iii * texElemSize) + 0x08) + prevPrevFaceCount;
 
                                 localFaceCount += BAToUInt32(texBlock, (iii * texElemSize) + 0x08);
 

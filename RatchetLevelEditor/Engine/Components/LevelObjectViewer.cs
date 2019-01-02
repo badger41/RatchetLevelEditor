@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
-using static RatchetModel;
 using static DataFunctions;
 using System.IO;
 using RatchetLevelEditor.Engine;

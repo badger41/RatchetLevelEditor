@@ -8,7 +8,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static DataFunctions;
-using static RatchetModel;
 using static RatchetTexture;
 using static ModelParser;
 
@@ -228,11 +227,11 @@ namespace RatchetLevelEditor.Engine.Deserialization
                         for (uint t = 0; t < texCount; t++)
                         {
                             RatchetTexture_Model modTex = new RatchetTexture_Model();
-                            modTex.ID = BAToUInt32(texBlock, (t * texElemSize) + 0x0);
-                            modTex.start = BAToUInt32(texBlock, (t * texElemSize) + 0x04);
-                            modTex.size = BAToUInt32(texBlock, (t * texElemSize) + 0x08);
+                            modTex.textureId = BAToUInt32(texBlock, (t * texElemSize) + 0x0);
+                            modTex.faceOffset = BAToUInt32(texBlock, (t * texElemSize) + 0x04);
+                            modTex.faceCount = BAToUInt32(texBlock, (t * texElemSize) + 0x08);
                             model.textureConfig.Add(modTex);
-                            model.faceCount += modTex.size;
+                            model.faceCount += modTex.faceCount;
                         }
 
 
@@ -306,11 +305,11 @@ namespace RatchetLevelEditor.Engine.Deserialization
                 for (uint t = 0; t < texCount; t++)
                 {
                     RatchetTexture_Model dlt = new RatchetTexture_Model();
-                    dlt.ID = BAToUInt32(texBlock, (t * texElemSize) + 0x00);
-                    dlt.start = BAToUInt32(texBlock, (t * texElemSize) + 0x08);
-                    dlt.size = BAToUInt32(texBlock, (t * texElemSize) + 0x0C);
+                    dlt.textureId = BAToUInt32(texBlock, (t * texElemSize) + 0x00);
+                    dlt.faceOffset = BAToUInt32(texBlock, (t * texElemSize) + 0x08);
+                    dlt.faceCount = BAToUInt32(texBlock, (t * texElemSize) + 0x0C);
                     model.textureConfig.Add(dlt);
-                    model.faceCount += dlt.size;
+                    model.faceCount += dlt.faceCount;
                 }
 
                 //Flip endianness of vertex array float[vert_x, vert_y, vert_z, norm_x, norm_y, norm_z, uv_u, uv_v, reserved reserved]
@@ -429,11 +428,11 @@ namespace RatchetLevelEditor.Engine.Deserialization
                 for (uint t = 0; t < texCount; t++)
                 {
                     RatchetTexture_Model dlt = new RatchetTexture_Model();
-                    dlt.ID = BAToUInt32(texBlock, (t * texElemSize) + 0x00);
-                    dlt.start = BAToUInt32(texBlock, (t * texElemSize) + 0x04);
-                    dlt.size = BAToUInt32(texBlock, (t * texElemSize) + 0x08);
+                    dlt.textureId = BAToUInt32(texBlock, (t * texElemSize) + 0x00);
+                    dlt.faceOffset = BAToUInt32(texBlock, (t * texElemSize) + 0x04);
+                    dlt.faceCount = BAToUInt32(texBlock, (t * texElemSize) + 0x08);
                     model.textureConfig.Add(dlt);
-                    model.faceCount += dlt.size;
+                    model.faceCount += dlt.faceCount;
                 }
 
                 //Flip endianness of vertex array float[vert_x, vert_y, vert_z, norm_x, norm_y, norm_z, uv_u, uv_v, reserved reserved]
@@ -574,9 +573,9 @@ namespace RatchetLevelEditor.Engine.Deserialization
                         for (uint iii = 0; iii < texCount; iii++)
                         {
                             RatchetTexture_Model tex = new RatchetTexture_Model();
-                            tex.ID = BAToUInt32(texBlock, (iii * texElemSize) + 0x00);
-                            tex.start = BAToUInt32(texBlock, (iii * texElemSize) + 0x04) + prevPrevFaceCount;
-                            tex.size = BAToUInt32(texBlock, (iii * texElemSize) + 0x08) + prevPrevFaceCount;
+                            tex.textureId = BAToUInt32(texBlock, (iii * texElemSize) + 0x00);
+                            tex.faceOffset = BAToUInt32(texBlock, (iii * texElemSize) + 0x04) + prevPrevFaceCount;
+                            tex.faceCount = BAToUInt32(texBlock, (iii * texElemSize) + 0x08) + prevPrevFaceCount;
                             localFaceCount += BAToUInt32(texBlock, (iii * texElemSize) + 0x08);
                             model.textureConfig.Add(tex);
                         }
@@ -1035,35 +1034,36 @@ namespace RatchetLevelEditor.Engine.Deserialization
         #endregion
 
         #region Sky Box
-        public static void deSerializeSkyBox(ref SkyBox skyBox, int index, int racNum)
+        public static void deSerializeSkyBox(ref RatchetModel_SkyBox skyBox, int index, int racNum)
         {
             uint pointer = ReadUInt32(ReadBlock(efs, (uint)index, 4), 0);
+            skyBox.modelType = ModelType.SkyBox;
             skyBox.layerCount = (int) ReadUInt32(efs, pointer + 0x04);
             skyBox.verticesPointer = ReadUInt32(efs, pointer + 0x14);
             skyBox.facesPointer = ReadUInt32(efs, pointer + 0x18);
 
             skyBox.layers = new List<SkyBoxLayer>();
-            skyBox.faces = new List<SkyBoxFace>();
-            skyBox.vertices = new List<SkyBoxVertex>();
+            skyBox.faces = new List<ModelFace>();
+            skyBox.vertices = new List<ModelVertex>();
 
             for (int i = 0; i < skyBox.layerCount; i++)
             {
                 SkyBoxLayer layer = new SkyBoxLayer();
-                layer.textures = new List<SkyBoxTexture>();
+                layer.textures = new List<RatchetTexture_Model>();
                 layer.pointer = ReadUInt32(efs, (uint) (pointer + 0x1C + (0x04 * i)));
                 layer.off_00 = (short)ReadUInt16(efs, (uint)(layer.pointer));
                 layer.textureCount = (short) ReadUInt16(efs, (uint)(layer.pointer + 0x02));
 
                 for (int t = 0; t < layer.textureCount; t++)
                 {
-                    SkyBoxTexture tex = new SkyBoxTexture();
-                    tex.textureId = (int) ReadUInt32(efs, (uint)((layer.pointer + 0x10) + (0x10 * t)));
+                    RatchetTexture_Model tex = new RatchetTexture_Model();
+                    tex.textureId = ReadUInt32(efs, (uint)((layer.pointer + 0x10) + (0x10 * t)));
                     tex.faceOffset = ReadUInt32(efs, (uint)((layer.pointer + 0x14) + (0x10 * t)));
-                    tex.faceCount = (int)ReadUInt32(efs, (uint)((layer.pointer + 0x18) + (0x10 * t)));
+                    tex.faceCount = ReadUInt32(efs, (uint)((layer.pointer + 0x18) + (0x10 * t)));
 
                     layer.textures.Add(tex);
 
-                    skyBox.faceCount += tex.faceCount;
+                    skyBox.faceCount += (int) tex.faceCount;
                 }
 
                 skyBox.layers.Add(layer);
@@ -1073,7 +1073,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
             {
                 uint fPointer = (uint)(skyBox.facesPointer + (0x06 * f));
 
-                SkyBoxFace face = new SkyBoxFace();
+                ModelFace face = new ModelFace();
                 face.index = f;
                 face.v1 = (short)ReadUInt16(efs, fPointer);
                 face.v2 = (short)ReadUInt16(efs, fPointer + 0x02);
@@ -1089,7 +1089,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
 
             for (int v = 0; v < skyBox.vertexCount; v++)
             {
-                SkyBoxVertex vertex = new SkyBoxVertex();
+                ModelVertex vertex = new ModelVertex();
 
                 vertex.x = BAToFloat(vertBlock, (uint) (v * 0x18) + 0x00);
                 vertex.y = BAToFloat(vertBlock, (uint) (v * 0x18) + 0x04);

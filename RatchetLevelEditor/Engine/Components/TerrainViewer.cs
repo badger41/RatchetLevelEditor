@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using static RatchetModel;
 using static TextureParser;
 using System.Drawing.Imaging;
 using System.IO;
 using static RatchetTexture;
 using RatchetLevelEditor.Engine;
 using RatchetLevelEditor.Gameplay;
+using RatchetLevelEditor.Engine.Models;
 
 namespace RatchetLevelEditor
 {
@@ -62,8 +62,8 @@ namespace RatchetLevelEditor
 
         bool ready = false;
 
-        public RatchetModel_Terrain selectedModel;
-        public RatchetModel_General objModel;
+        RatchetModel_Terrain selectedModel;
+        RatchetModel_General objModel;
 
         Matrix4 mvp;
 
@@ -192,7 +192,7 @@ namespace RatchetLevelEditor
                 texList = new List<uint>();
                 foreach (RatchetTexture_Model tex in selectedModel.textureConfig)
                 {
-                    if (!texList.Contains(tex.ID)) texList.Add(tex.ID);
+                    if (!texList.Contains(tex.textureId)) texList.Add(tex.textureId);
 
                 }
 
@@ -295,19 +295,19 @@ namespace RatchetLevelEditor
                         //Bind textures one by one, applying it to the relevant vertices based on the index array
                         foreach (RatchetTexture_Model tex in objModel.textureConfig)
                         {
-                            int indx = modTexList.IndexOf(tex.ID);
+                            int indx = modTexList.IndexOf(tex.textureId);
                             GL.BindTexture(TextureTarget.Texture2D, mobTexIDArr[indx]);
 
                             if (DataStoreGlobal.selectedMoby == mob)
                             {
                                 GL.Uniform4(pgmID_rcID, new Vector4(1, 1, 1, 1));
                                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-                                GL.DrawElements(PrimitiveType.Triangles, (int)tex.size, DrawElementsType.UnsignedShort, (int)tex.start * sizeof(ushort));
+                                GL.DrawElements(PrimitiveType.Triangles, (int)tex.faceCount, DrawElementsType.UnsignedShort, (int)tex.faceOffset * sizeof(ushort));
 
                                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
                             }
                             GL.Uniform4(pgmID_rcID, new Vector4(mob.r / 255f, mob.g / 255f, mob.b / 255f, 0.5f));
-                            GL.DrawElements(PrimitiveType.Triangles, (int)tex.size, DrawElementsType.UnsignedShort, (int)tex.start * sizeof(ushort));
+                            GL.DrawElements(PrimitiveType.Triangles, (int)tex.faceCount, DrawElementsType.UnsignedShort, (int)tex.faceOffset * sizeof(ushort));
                         }
                     }
                 }
@@ -335,7 +335,7 @@ namespace RatchetLevelEditor
                         //Bind textures one by one, applying it to the relevant vertices based on the index array
                         foreach (RatchetTexture_Model tex in objModel.textureConfig)
                         {
-                            int indx = levelTexList.IndexOf(tex.ID);
+                            int indx = levelTexList.IndexOf(tex.textureId);
                             GL.BindTexture(TextureTarget.Texture2D, levelbTexIDArr[indx]);
 
                             if (DataStoreGlobal.selectedLevelObject == levObj)
@@ -343,13 +343,13 @@ namespace RatchetLevelEditor
 
                                 GL.Uniform4(pgmID_rcID, new Vector4(1, 1, 1, 1));
                                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-                                GL.DrawElements(PrimitiveType.Triangles, (int)tex.size, DrawElementsType.UnsignedShort, (int)tex.start * sizeof(ushort));
+                                GL.DrawElements(PrimitiveType.Triangles, (int)tex.faceCount, DrawElementsType.UnsignedShort, (int)tex.faceOffset * sizeof(ushort));
                                 GL.Uniform4(pgmID_rcID, new Vector4(0, 0, 0, 0));
                                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
                             }
 
 
-                            GL.DrawElements(PrimitiveType.Triangles, (int)tex.size, DrawElementsType.UnsignedShort, (int)tex.start * sizeof(ushort));
+                            GL.DrawElements(PrimitiveType.Triangles, (int)tex.faceCount, DrawElementsType.UnsignedShort, (int)tex.faceOffset * sizeof(ushort));
                         }
                     }
                 }
@@ -380,9 +380,9 @@ namespace RatchetLevelEditor
                         //Bind textures one by one, applying it to the relevant vertices based on the index array
                         foreach (RatchetTexture_Model tex in objModel.textureConfig)
                         {
-                            int indx = sceneryTexList.IndexOf(tex.ID);
+                            int indx = sceneryTexList.IndexOf(tex.textureId);
                             GL.BindTexture(TextureTarget.Texture2D, sceneryTexIDArr[indx]);
-                            GL.DrawElements(PrimitiveType.Triangles, (int)tex.size, DrawElementsType.UnsignedShort, (int)tex.start * sizeof(ushort));
+                            GL.DrawElements(PrimitiveType.Triangles, (int)tex.faceCount, DrawElementsType.UnsignedShort, (int)tex.faceOffset * sizeof(ushort));
                         }
                     }
                 }
@@ -437,19 +437,19 @@ namespace RatchetLevelEditor
                 //Bind textures one by one, applying it to the relevant vertices based on the index array
                 foreach (RatchetTexture_Model tex in selectedModel.textureConfig)
                 {
-                    int indx = texList.IndexOf(tex.ID);
+                    int indx = texList.IndexOf(tex.textureId);
                     GL.BindTexture(TextureTarget.Texture2D, texIDarr[indx]);
 
                     if (false)
                     {
                         GL.Uniform4(pgmID_rcID, new Vector4(1, 1, 1, 1));
                         GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-                        GL.DrawElements(PrimitiveType.Triangles, (int)tex.size, DrawElementsType.UnsignedInt, (int)tex.start * sizeof(uint));
+                        GL.DrawElements(PrimitiveType.Triangles, (int)tex.faceCount, DrawElementsType.UnsignedInt, (int)tex.faceOffset * sizeof(uint));
                     }
 
                     GL.Uniform4(pgmID_rcID, new Vector4(0, 0, 0, 0));
                     GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-                    GL.DrawElements(PrimitiveType.Triangles, (int)tex.size, DrawElementsType.UnsignedInt, (int)tex.start * sizeof(uint));
+                    GL.DrawElements(PrimitiveType.Triangles, (int)tex.faceCount, DrawElementsType.UnsignedInt, (int)tex.faceOffset * sizeof(uint));
                 }
 
                 GL.DisableVertexAttribArray(2);
@@ -483,12 +483,12 @@ namespace RatchetLevelEditor
                     //Bind textures one by one, applying it to the relevant vertices based on the index array
                     foreach (RatchetTexture_Model tex in chunk.textureConfig)
                     {
-                        int indx = chunkTexList.IndexOf(tex.ID);
+                        int indx = chunkTexList.IndexOf(tex.textureId);
                         GL.BindTexture(TextureTarget.Texture2D, chunkTexIDArr[indx]);
 
                         GL.Uniform4(pgmID_rcID, new Vector4(0, 0, 0, 0));
                         GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-                        GL.DrawElements(PrimitiveType.Triangles, (int)tex.size, DrawElementsType.UnsignedInt, (int)tex.start * sizeof(uint));
+                        GL.DrawElements(PrimitiveType.Triangles, (int)tex.faceCount, DrawElementsType.UnsignedInt, (int)tex.faceOffset * sizeof(uint));
                     }
 
                     GL.DisableVertexAttribArray(2);
@@ -551,7 +551,7 @@ namespace RatchetLevelEditor
 
                     foreach (RatchetTexture_Model tex in objModel.textureConfig)
                     {
-                        if (!modTexList.Contains(tex.ID)) modTexList.Add(tex.ID);
+                        if (!modTexList.Contains(tex.textureId)) modTexList.Add(tex.textureId);
                     }
                 }
             }
@@ -633,7 +633,7 @@ namespace RatchetLevelEditor
 
                     foreach (RatchetTexture_Model tex in objModel.textureConfig)
                     {
-                        if (!levelTexList.Contains(tex.ID)) levelTexList.Add(tex.ID);
+                        if (!levelTexList.Contains(tex.textureId)) levelTexList.Add(tex.textureId);
                     }
                 }
             }
@@ -707,7 +707,7 @@ namespace RatchetLevelEditor
 
                     foreach (RatchetTexture_Model tex in objModel.textureConfig)
                     {
-                        if (!sceneryTexList.Contains(tex.ID)) sceneryTexList.Add(tex.ID);
+                        if (!sceneryTexList.Contains(tex.textureId)) sceneryTexList.Add(tex.textureId);
                     }
                 }
             }
@@ -1015,7 +1015,7 @@ namespace RatchetLevelEditor
 
                     foreach (RatchetTexture_Model tex in chunk.textureConfig)
                     {
-                        if (!chunkTexList.Contains(tex.ID)) chunkTexList.Add(tex.ID);
+                        if (!chunkTexList.Contains(tex.textureId)) chunkTexList.Add(tex.textureId);
                     }
                 }
             }

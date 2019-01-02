@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static DataFunctions;
-using static RatchetModel;
 using static RatchetTexture;
 using static RatchetLevelEditor.GameplayParser;
 using RatchetLevelEditor.Engine;
 using RatchetLevelEditor.Gameplay;
+using RatchetLevelEditor.Engine.Models;
 
 namespace RatchetLevelEditor
 {
@@ -732,9 +732,9 @@ namespace RatchetLevelEditor
                             for (uint iii = 0; iii < texCount; iii++)
                             {
                                 RatchetTexture_Model tex = new RatchetTexture_Model();
-                                tex.ID = BAToUInt32(texBlock, (iii * texElemSize) + 0x00);
-                                tex.start = BAToUInt32(texBlock, (iii * texElemSize) + 0x04) + prevPrevFaceCount;
-                                tex.size = BAToUInt32(texBlock, (iii * texElemSize) + 0x08) + prevPrevFaceCount;
+                                tex.textureId = BAToUInt32(texBlock, (iii * texElemSize) + 0x00);
+                                tex.faceOffset = BAToUInt32(texBlock, (iii * texElemSize) + 0x04) + prevPrevFaceCount;
+                                tex.faceCount = BAToUInt32(texBlock, (iii * texElemSize) + 0x08) + prevPrevFaceCount;
 
                                 localFaceCount += BAToUInt32(texBlock, (iii * texElemSize) + 0x08);
 

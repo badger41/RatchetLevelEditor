@@ -4,11 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static RatchetModel;
 using static DataFunctions;
 using RatchetLevelEditor;
 using static RatchetTexture;
 using RatchetLevelEditor.Engine;
+using RatchetLevelEditor.Engine.Models;
 
 class GadgetsParser
     {
@@ -96,11 +96,11 @@ class GadgetsParser
                     for (uint t = 0; t < texCount; t++)
                     {
                         RatchetTexture_Model modTex = new RatchetTexture_Model();
-                        modTex.ID = (uint)(modelIndex);
-                        modTex.start = BAToUInt32(texBlock, (t * texElemSize) + 0x04);
-                        modTex.size = BAToUInt32(texBlock, (t * texElemSize) + 0x08);
+                        modTex.textureId = (uint)(modelIndex);
+                        modTex.faceOffset = BAToUInt32(texBlock, (t * texElemSize) + 0x04);
+                        modTex.faceCount = BAToUInt32(texBlock, (t * texElemSize) + 0x08);
                         model.textureConfig.Add(modTex);
-                        model.faceCount += modTex.size;
+                        model.faceCount += modTex.faceCount;
                     }
 
 

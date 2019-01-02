@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static RatchetModel;
 using static DataFunctions;
 using RatchetLevelEditor;
+using RatchetLevelEditor.Engine.Models;
 
 class ModelParser
     {
@@ -27,7 +27,7 @@ class ModelParser
         List<uint> usedMtls = new List<uint>(); //To prevent it from making double mtl entries
         for (int i = 0; i < model.textureConfig.Count; i++)
         {
-            uint modelTextureID = model.textureConfig[i].ID;
+            uint modelTextureID = model.textureConfig[i].textureId;
             if (!usedMtls.Contains(modelTextureID))
             {
                 MTLfs.WriteLine("newmtl mtl_" + modelTextureID);
@@ -37,7 +37,7 @@ class ModelParser
                 MTLfs.WriteLine("Ni 1.000000");
                 MTLfs.WriteLine("d 0.000000");
                 MTLfs.WriteLine("illum 1");
-                MTLfs.WriteLine("map_Kd tex_" + model.textureConfig[i].ID + ".png");
+                MTLfs.WriteLine("map_Kd tex_" + model.textureConfig[i].textureId + ".png");
                 usedMtls.Add(modelTextureID);
             }
         }
@@ -69,10 +69,10 @@ class ModelParser
         {
             if (model.textureConfig != null && tCnt < model.textureConfig.Count)
             {
-                if (i * 3 >= model.textureConfig[tCnt].start)
+                if (i * 3 >= model.textureConfig[tCnt].faceOffset)
                 {
-                    OBJfs.WriteLine("usemtl mtl_" + model.textureConfig[tCnt].ID.ToString(""));
-                    OBJfs.WriteLine("g Texture_" + model.textureConfig[tCnt].ID.ToString(""));
+                    OBJfs.WriteLine("usemtl mtl_" + model.textureConfig[tCnt].textureId.ToString(""));
+                    OBJfs.WriteLine("g Texture_" + model.textureConfig[tCnt].textureId.ToString(""));
                     tCnt++;
                 }
             }
@@ -99,7 +99,7 @@ class ModelParser
         List<uint> usedMtls = new List<uint>(); //To prevent it from making double mtl entries
         for (int i = 0; i < model.textureConfig.Count; i++)
         {
-            uint modelTextureID = model.textureConfig[i].ID;
+            uint modelTextureID = model.textureConfig[i].textureId;
             if (!usedMtls.Contains(modelTextureID))
             {
                 MTLfs.WriteLine("newmtl mtl_" + modelTextureID);
@@ -109,7 +109,7 @@ class ModelParser
                 MTLfs.WriteLine("Ni 1.000000");
                 MTLfs.WriteLine("d 0.000000");
                 MTLfs.WriteLine("illum 1");
-                MTLfs.WriteLine("map_Kd tex_" + model.textureConfig[i].ID + ".png");
+                MTLfs.WriteLine("map_Kd tex_" + model.textureConfig[i].textureId + ".png");
                 usedMtls.Add(modelTextureID);
             }
         }
@@ -142,10 +142,10 @@ class ModelParser
         {
             if (model.textureConfig != null && tCnt < model.textureConfig.Count)
             {
-                if (i * 3 >= model.textureConfig[tCnt].start)
+                if (i * 3 >= model.textureConfig[tCnt].faceOffset)
                 {
-                    OBJfs.WriteLine("usemtl mtl_" + model.textureConfig[tCnt].ID.ToString(""));
-                    OBJfs.WriteLine("g Texture_" + model.textureConfig[tCnt].ID.ToString(""));
+                    OBJfs.WriteLine("usemtl mtl_" + model.textureConfig[tCnt].textureId.ToString(""));
+                    OBJfs.WriteLine("g Texture_" + model.textureConfig[tCnt].textureId.ToString(""));
                     tCnt++;
                 }
             }

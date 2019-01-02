@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static DataFunctions;
-using static RatchetModel;
+using static RatchetTexture;
 
 namespace RatchetLevelEditor.Engine.Serialization
 {
@@ -727,7 +727,7 @@ namespace RatchetLevelEditor.Engine.Serialization
 
             int currentOffset = engine.Length;
 
-            SkyBox skyBox = DataStoreEngine.skyBox;
+            RatchetModel_SkyBox skyBox = DataStoreEngine.skyBox;
             int headerSizeNeeded = 0x1C + (0x04 * skyBox.layerCount);
             while(headerSizeNeeded % 0x10 != 0)
             {
@@ -746,7 +746,7 @@ namespace RatchetLevelEditor.Engine.Serialization
                 WriteUint16(ref layerData, 0x02, (ushort) layer.textureCount);
 
                 uint tPos = 0;
-                foreach(SkyBoxTexture texture in layer.textures)
+                foreach(RatchetTexture_Model texture in layer.textures)
                 {
                     WriteUint32(ref layerData, (int) (0x10 + tPos + 0x00), (uint) texture.textureId);
                     WriteUint32(ref layerData, (int) (0x10 + tPos + 0x04), (uint) texture.faceOffset);
@@ -769,7 +769,7 @@ namespace RatchetLevelEditor.Engine.Serialization
             byte[] vertexData = new byte[vertexSizeNeeded];
 
             uint vPos = 0;
-            foreach(SkyBoxVertex vertex in skyBox.vertices)
+            foreach(ModelVertex vertex in skyBox.vertices)
             {
                 WriteFloat(ref vertexData, (int) (vPos + 0x00), vertex.x);
                 WriteFloat(ref vertexData, (int) (vPos + 0x04), vertex.y);
@@ -793,7 +793,7 @@ namespace RatchetLevelEditor.Engine.Serialization
             byte[] faceData = new byte[faceSizeNeeded];
 
             uint fPos = 0;
-            foreach(SkyBoxFace face in skyBox.faces)
+            foreach(ModelFace face in skyBox.faces)
             {
                 WriteUint16(ref faceData, (int) fPos + 0x00, (ushort) face.v1);
                 WriteUint16(ref faceData, (int) fPos + 0x02, (ushort) face.v2);

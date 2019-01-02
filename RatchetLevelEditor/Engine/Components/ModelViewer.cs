@@ -11,10 +11,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using static RatchetModel;
 using static ModelParser;
 using static TextureParser;
 using RatchetLevelEditor.Engine;
+using RatchetLevelEditor.Engine.Models;
 
 namespace RatchetLevelEditor
 {
@@ -53,7 +53,7 @@ namespace RatchetLevelEditor
                 string texIDs = "";
                 for (int i = 0; i < selectedModel.textureConfig.Count; i++)
                 {
-                    texIDs += " " + selectedModel.textureConfig[i].ID.ToString("X");
+                    texIDs += " " + selectedModel.textureConfig[i].textureId.ToString("X");
                 }
                 modelDataList.Items.Add("Textures: " + texIDs);
                 modelDataList.Items.Add("Size: " + selectedModel.size.ToString());
@@ -90,7 +90,7 @@ namespace RatchetLevelEditor
                 GL.GenTextures(texCount, texIDarr);
                 for (int i = 0; i < texCount; i++)
                 {
-                    Bitmap file = getTextureImage((int)selectedModel.textureConfig[i].ID);
+                    Bitmap file = getTextureImage((int)selectedModel.textureConfig[i].textureId);
 
                     if (file != null)
                     {
@@ -357,7 +357,7 @@ namespace RatchetLevelEditor
                 for(int i = 0; i < selectedModel.textureConfig.Count(); i++)
                 {
                     GL.BindTexture(TextureTarget.Texture2D, texIDarr[i]);
-                    GL.DrawElements(PrimitiveType.Triangles, (int)selectedModel.textureConfig[i].size, DrawElementsType.UnsignedShort, (int)selectedModel.textureConfig[i].start * sizeof(ushort));
+                    GL.DrawElements(PrimitiveType.Triangles, (int)selectedModel.textureConfig[i].faceCount, DrawElementsType.UnsignedShort, (int)selectedModel.textureConfig[i].faceOffset * sizeof(ushort));
                 }
 
                 //GL.DrawElements(PrimitiveType.Triangles, indCnt, DrawElementsType.UnsignedShort, 0);
