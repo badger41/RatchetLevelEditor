@@ -750,7 +750,7 @@ namespace RatchetLevelEditor.Engine.Serialization
             Array.Resize(ref engine, engine.Length + playerAnimPointerBlock.Length);
 
             int animOffset = 0;
-            foreach (RatchetPlayerAnimation anim in DataStoreEngine.playerAnims)
+            foreach (RatchetAnimation_Player anim in DataStoreEngine.playerAnims)
             {
                 currentOffset = engine.Length;
 

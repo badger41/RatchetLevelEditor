@@ -119,7 +119,7 @@
     <Compile Include="Engine\DataStoreEngine.cs" />
     <Compile Include="Engine\Deserialization\EngineDeserializer.cs" />
     <Compile Include="Engine\Models\EngineHeader.cs" />
-    <Compile Include="Engine\Models\RatchetPlayerAnimation.cs" />
+    <Compile Include="Engine\Models\RatchetAnimation.cs" />
     <Compile Include="Engine\Models\ShrubModel.cs" />
     <Compile Include="Engine\Models\TieModel.cs" />
     <Compile Include="Engine\Serialization\EngineSerializer.cs" />
@@ -290,6 +290,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Engine\Models\UnknownData.cs" />
+    <AdditionalFiles Include="Config\Rac3\ModelList.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AdditionalFiles>
     <Content Include="Resources\load.gif" />
     <None Include="Shaders\fs.glsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

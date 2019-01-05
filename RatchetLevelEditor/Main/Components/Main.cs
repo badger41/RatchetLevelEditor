@@ -166,19 +166,19 @@ namespace RatchetLevelEditor
 				switch (game)
 				{
 					case RCGame.RatchetAndClank:
-						stream = new StreamReader(Application.StartupPath + "/ModelListRC1.txt");
+						stream = new StreamReader(Application.StartupPath + "/Config/Rac1/ModelList.txt");
 						Console.WriteLine("Loaded model names for Ratchet & Clank.");
 						break;
 					case RCGame.GoingCommando:
-						stream = new StreamReader(Application.StartupPath + "/ModelListGC.txt");
+						stream = new StreamReader(Application.StartupPath + "/Config/Rac2/ModelList.txt");
 						Console.WriteLine("Loaded model names for Ratchet & Clank: Going Commando.");
 						break;
 					case RCGame.UpYourArsenal:
-						stream = new StreamReader(Application.StartupPath + "/ModelListUYA.txt");
+						stream = new StreamReader(Application.StartupPath + "/Config/Rac3/ModelList.txt");
 						Console.WriteLine("Loaded model names for Ratchet & Clank: Up Your Arsenal.");
 						break;
 					case RCGame.Deadlocked:
-						stream = new StreamReader(Application.StartupPath + "/ModelListDL.txt");
+						stream = new StreamReader(Application.StartupPath + "/Config/Rac4/ModelList.txt");
 						Console.WriteLine("Loaded model names for Ratchet: Deadlocked.");
 						break;
 				}

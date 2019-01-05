@@ -33,5 +33,6 @@ public class RatchetTexture
         public uint textureId;
         public uint faceOffset;//
         public uint faceCount;
+        public uint texture_ind_0C;
     };
 }

@@ -956,7 +956,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
         #endregion
 
         #region Campaign Player Anims
-        public static void deSerializePlayerAnims(ref List<RatchetPlayerAnimation> playerAnims, int index, int racNum)
+        public static void deSerializePlayerAnims(ref List<RatchetAnimation_Player> playerAnims, int index, int racNum)
         {
             Console.WriteLine("Parsing player animations");
             uint pointer = ReadUInt32(ReadBlock(efs, (uint)index, 4), 0);
@@ -969,7 +969,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
 
                 for (int i = 0; i < playerAnimPointerBlock.Length; i += 0x04)
                 {
-                    RatchetPlayerAnimation anim;
+                    RatchetAnimation_Player anim;
                     uint animPointer = ReadUInt32(playerAnimPointerBlock, i);
 
                     //If the index has an anim pointer
@@ -993,7 +993,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
 
                         //animPointer + endOfAnim = block of data that is our animation
 
-                        anim = new RatchetPlayerAnimation()
+                        anim = new RatchetAnimation_Player()
                         {
                             index = i / 4,
                             unk_count = unk_count,
@@ -1003,7 +1003,7 @@ namespace RatchetLevelEditor.Engine.Deserialization
                     else
                     {
                         //initialize an anim with no data
-                        anim = new RatchetPlayerAnimation()
+                        anim = new RatchetAnimation_Player()
                         {
                             index = i / 4,
                         };
