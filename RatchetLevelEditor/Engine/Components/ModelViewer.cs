@@ -396,9 +396,16 @@ namespace RatchetLevelEditor
 
                 if (modelsListTree.SelectedNode.Level == 1)
                 {
-                    if(modelsListTree.SelectedNode.Parent.Index == 0)       //Level model
+                    if(modelsListTree.SelectedNode.Parent.Index == 0)       //spawnable model
                     {
                         RatchetModel_General selectedModel = DataStoreEngine.spawnableModels[modelsListTree.SelectedNode.Index];
+                        SpawnableToObj(ref selectedModel, OBJfilename, MTLfilename);
+                        Console.WriteLine("OBJ file created: " + OBJfilename);
+                        Console.WriteLine("MTL file created: " + MTLfilename);
+                    }
+                    else if (modelsListTree.SelectedNode.Parent.Index == 1)       //spawnable model
+                    {
+                        RatchetModel_General selectedModel = DataStoreEngine.levelModels[modelsListTree.SelectedNode.Index];
                         SpawnableToObj(ref selectedModel, OBJfilename, MTLfilename);
                         Console.WriteLine("OBJ file created: " + OBJfilename);
                         Console.WriteLine("MTL file created: " + MTLfilename);

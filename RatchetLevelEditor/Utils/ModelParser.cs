@@ -35,7 +35,7 @@ class ModelParser
                 MTLfs.WriteLine("Ka 1.000000 1.000000 1.000000");
                 MTLfs.WriteLine("Kd 1.000000 1.000000 1.000000");
                 MTLfs.WriteLine("Ni 1.000000");
-                MTLfs.WriteLine("d 0.000000");
+                MTLfs.WriteLine("d 1.000000");
                 MTLfs.WriteLine("illum 1");
                 MTLfs.WriteLine("map_Kd tex_" + model.textureConfig[i].textureId + ".png");
                 usedMtls.Add(modelTextureID);
