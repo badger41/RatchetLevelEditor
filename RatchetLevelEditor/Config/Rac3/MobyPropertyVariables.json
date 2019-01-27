@@ -1,54 +1,52 @@
 [
 	{
-      "modelIds": [
-        0x18A2
-      ],
-      "pVars": [
-		{
-          "index": 0x0030,
-          "label": "Health",
-          "control": "float",
-          "specialInd": "none",
-          "length": 0x04,
-          "min": -1,
-          "max": -1,
-        },
-		{
-          "index": 0x02D0,
-          "label": "Aggression Detection Zone",
-          "control": "number",
-          "specialInd": "none",
-          "length": 0x04,
-          "min": 0,
-          "max": 250,
-        },
-		{
-          "index": 0x02D8,
-          "label": "Aggression Reaction Zone",
-          "control": "number",
-          "specialInd": "none",
-          "length": 0x04,
-          "min": 0,
-          "max": 250,
-        },
-		{
-          "index": 0x02D8,
-          "label": "Patrol Zone",
-          "control": "number",
-          "specialInd": "none",
-          "length": 0x04,
-          "min": 0,
-          "max": 250,
-        },
-		{
-          "index": 0x03D0,
-          "label": "Run to Zone (When Triggered)",
-          "control": "number",
-          "specialInd": "none",
-          "length": 0x04,
-          "min": 0,
-          "max": 250,
-        }
-      ]
-    },
+		"modelIds": [0x18a2],
+		"pVars": [
+			{
+				"index": 0x0030,
+				"label": "Health",
+				"control": "float",
+				"specialInd": "none",
+				"length": 0x04,
+				"min": -1,
+				"max": -1
+			},
+			{
+				"index": 0x02d0,
+				"label": "Aggression Detection Zone",
+				"control": "number",
+				"specialInd": "none",
+				"length": 0x04,
+				"min": 0,
+				"max": 250
+			},
+			{
+				"index": 0x02d8,
+				"label": "Aggression Reaction Zone",
+				"control": "number",
+				"specialInd": "none",
+				"length": 0x04,
+				"min": 0,
+				"max": 250
+			},
+			{
+				"index": 0x02d8,
+				"label": "Patrol Zone",
+				"control": "number",
+				"specialInd": "none",
+				"length": 0x04,
+				"min": 0,
+				"max": 250
+			},
+			{
+				"index": 0x03d0,
+				"label": "Run to Zone (When Triggered)",
+				"control": "number",
+				"specialInd": "none",
+				"length": 0x04,
+				"min": 0,
+				"max": 250
+			}
+		]
+	}
 ]
